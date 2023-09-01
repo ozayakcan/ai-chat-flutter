@@ -33,13 +33,13 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Expanded(
-              child: ListView(
+              child: SingleChildScrollView(
                 reverse: true,
                 controller: scrollController,
-                children: [
-                  for (int i = messages.length - 1; i >= 0; i--)
-                    Flexible(
-                      child: Column(
+                child: Column(
+                  children: [
+                    for (int i = 0; i < messages.length; i++)
+                      Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (i > 0)
@@ -51,9 +51,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             messageModel: messages[i],
                           ),
                         ],
-                      ),
-                    )
-                ],
+                      )
+                  ],
+                ),
               ),
             ),
             Padding(
