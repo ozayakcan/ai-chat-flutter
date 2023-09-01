@@ -1,12 +1,17 @@
-import 'package:aichat/utils/date.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../models/message.dart';
+import '../utils/ai.dart';
+import '../utils/date.dart';
 import '../widgets/message.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({super.key, required this.userID, required this.messages});
+
+  final String userID;
+  final List<MessageModel> messages;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -19,6 +24,12 @@ class _MyHomePageState extends State<MyHomePage> {
   ScrollController scrollController = ScrollController();
 
   List<MessageModel> messages = [];
+
+  @override
+  void initState() {
+    super.initState();
+    messages = widget.messages;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,30 +82,52 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (textEditingController.text.isNotEmpty) {
-                        setState(() {
-                          messages.add(
-                            MessageModel(
-                              message: textEditingController.text,
-                              isSender: true,
-                            ),
+                        try {
+                          String text = textEditingController.text;
+                          setState(() {
+                            messages.add(
+                              MessageModel(
+                                message: text,
+                                isSender: true,
+                              ),
+                            );
+                          });
+                          String response = await AI
+                              .of(context)
+                              .sendMessage(widget.userID, text);
+                          setState(() {
+                            messages.add(
+                              MessageModel(
+                                message: response,
+                                isSender: false,
+                              ),
+                            );
+                          });
+                          scrollController.animateTo(
+                            0.0,
+                            curve: Curves.easeOut,
+                            duration: const Duration(milliseconds: 300),
                           );
-
-                          messages.add(
-                            MessageModel(
-                              message: textEditingController.text,
-                              isSender: false,
-                            ),
-                          );
-                        });
-                        textEditingController.text = "";
-                        focusNode.requestFocus();
-                        scrollController.animateTo(
-                          0.0,
-                          curve: Curves.easeOut,
-                          duration: const Duration(milliseconds: 300),
-                        );
+                        } catch (e) {
+                          if (kDebugMode) {
+                            print("Message Error: $e");
+                          }
+                          setState(() {
+                            messages.add(
+                              MessageModel(
+                                message: AppLocalizations.of(context)
+                                    .an_error_occurred,
+                                isSender: false,
+                              ),
+                            );
+                          });
+                        } finally {
+                          textEditingController.text = "";
+                          focusNode.requestFocus();
+                          await MessageModel.save(messages);
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(

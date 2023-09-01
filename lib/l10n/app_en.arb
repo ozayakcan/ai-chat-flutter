@@ -1,6 +1,10 @@
 {
     "type_something": "Type something...",
     "date_format": "MMMM dd, yyyy",
+    "@date_format": {
+        "description": "Example of MMMM dd, yyyy: April 3, 2023"
+    },
     "today": "Today",
-    "yesterday": "Testerday"
+    "yesterday": "Testerday",
+    "an_error_occurred": "An error occurred! Please try again later"
 }
