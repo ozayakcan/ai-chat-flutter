@@ -1,3 +1,6 @@
 {
-    "type_something":"Type something..."
+    "type_something": "Type something...",
+    "date_format": "MMMM dd, yyyy",
+    "today": "Today",
+    "yesterday": "Testerday"
 }
