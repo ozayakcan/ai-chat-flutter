@@ -1,6 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'utils/theme.dart';
 
@@ -19,7 +21,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeModel>(
           builder: (context, ThemeModel themeNotifier, child) {
         return MaterialApp(
-          title: "aichat",
+          title: "AI Chat",
           theme: ThemeModel.light,
           darkTheme: ThemeModel.dark,
           themeMode: themeNotifier.isDark == null
@@ -34,8 +36,15 @@ class MyApp extends StatelessWidget {
               PointerDeviceKind.unknown
             },
           ),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: const MyHomePage(
-            title: "aichat",
+            title: "AI Chat",
           ),
         );
       }),
@@ -112,6 +121,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Text(
+              AppLocalizations.of(context).test,
+            ),
             const Text(
               'You have pushed the button this many times:',
             ),
