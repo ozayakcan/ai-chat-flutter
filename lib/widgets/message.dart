@@ -1,7 +1,10 @@
 import 'dart:math' as math;
 import 'package:aichat/models/message.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/date.dart';
 
@@ -33,6 +36,45 @@ class MessageWidget extends StatelessWidget {
   final MessageModel messageModel;
   @override
   Widget build(BuildContext context) {
+    final reg = RegExp("(?=<a)|(?<=/a>)");
+    var resultMsg = messageModel.message.split(reg);
+    List<TextSpan> msgList = [];
+    for (var msg in resultMsg) {
+      if (msg.startsWith("<a")) {
+        RegExp regexHref = RegExp('(?<=href=").*?(?=")');
+        var matchHref = regexHref.firstMatch(msg);
+        final regexText = RegExp("<[^>]*>");
+        var matchText = msg.split(regexText);
+        msgList.add(
+          TextSpan(
+            text: matchText[1],
+            recognizer: TapGestureRecognizer()
+              ..onTap = () async {
+                String url = matchHref!.group(0)!;
+                if (!await launchUrl(Uri.parse(url))) {
+                  if (kDebugMode) {
+                    print("Could not launch url: $url");
+                  }
+                }
+              },
+            style: const TextStyle(
+              color: Colors.blue,
+              fontSize: 14,
+            ),
+          ),
+        );
+      } else {
+        msgList.add(
+          TextSpan(
+            text: msg,
+            style: TextStyle(
+              color: messageModel.isSender ? Colors.white : Colors.black,
+              fontSize: 14,
+            ),
+          ),
+        );
+      }
+    }
     return Padding(
       padding: const EdgeInsets.only(right: 18.0, left: 50, top: 15, bottom: 5),
       child: Row(
@@ -80,14 +122,9 @@ class MessageWidget extends StatelessWidget {
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        messageModel.message,
-                        textAlign: TextAlign.end,
-                        style: TextStyle(
-                          color: messageModel.isSender
-                              ? Colors.white
-                              : Colors.black,
-                          fontSize: 14,
+                      RichText(
+                        text: TextSpan(
+                          children: msgList,
                         ),
                       ),
                       Padding(
