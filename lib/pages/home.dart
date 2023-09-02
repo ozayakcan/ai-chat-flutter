@@ -77,6 +77,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       autofocus: true,
                       controller: textEditingController,
                       decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25.0),
+                        ),
                         hintText: AppLocalizations.of(context).type_something,
                       ),
                     ),
