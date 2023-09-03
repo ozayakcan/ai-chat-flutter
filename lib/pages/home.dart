@@ -1,13 +1,11 @@
-import 'package:aichat/widgets/widget.dart';
+import 'package:aichat/widgets/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 import '../models/message.dart';
 import '../utils/ai.dart';
+import '../utils/data.dart';
 import '../utils/date.dart';
-import '../utils/shared_preferences.dart';
-import '../utils/text.dart';
 import '../widgets/message.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -42,30 +40,68 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("AI Chat"),
+        title: Text("AI Chat $userID"),
         actions: [
           PopupMenuButton(
-            onSelected: (value) {
+            onSelected: (value) async {
+              ScaffoldSnackbar scaffoldSnackbar = ScaffoldSnackbar.of(context);
+              AppLocalizations appLocalizations = AppLocalizations.of(context);
               switch (value) {
                 case 0:
                   showLoadingDialog(
-                    context,
-                    AppLocalizations.of(context).clearing_messages,
+                    appLocalizations.backing_up_messages,
                   );
-                  Future.delayed(const Duration(seconds: 2), () {
-                    clearMessages();
-                    closeLoadingDialog(context);
-                  });
+                  await Data.backupData(
+                    scaffoldSnackbar: scaffoldSnackbar,
+                    appLocalizations: appLocalizations,
+                  );
+                  closeLoadingDialog();
                   break;
                 case 1:
                   showLoadingDialog(
-                    context,
-                    AppLocalizations.of(context).clearing_all_data,
+                    appLocalizations.restoring_messages,
                   );
-                  Future.delayed(const Duration(seconds: 2), () {
-                    clearMessages();
-                    resetUserID();
-                    closeLoadingDialog(context);
+                  await Data.restoreData(
+                    scaffoldSnackbar: scaffoldSnackbar,
+                    appLocalizations: appLocalizations,
+                    onMessagedRestored: () async {
+                      List<MessageModel> allMessages = await MessageModel.get();
+                      setState(() {
+                        messages = allMessages;
+                      });
+                    },
+                  );
+                  closeLoadingDialog();
+                  break;
+                case 2:
+                  showLoadingDialog(
+                    appLocalizations.clearing_messages,
+                  );
+                  Future.delayed(const Duration(seconds: 2), () async {
+                    await Data.clearMessages(onCleared: () {
+                      setState(() {
+                        messages.clear();
+                      });
+                    });
+                    closeLoadingDialog();
+                  });
+                  break;
+                case 3:
+                  showLoadingDialog(
+                    appLocalizations.clearing_all_data,
+                  );
+                  Future.delayed(const Duration(seconds: 2), () async {
+                    await Data.clearMessages(onCleared: () {
+                      setState(() {
+                        messages.clear();
+                      });
+                    });
+                    await Data.resetUserID(onResetUserID: (newUserID) {
+                      setState(() {
+                        userID = newUserID;
+                      });
+                    });
+                    closeLoadingDialog();
                   });
                   break;
                 default:
@@ -76,12 +112,24 @@ class _MyHomePageState extends State<MyHomePage> {
                 popupMenuItem(
                   context,
                   value: 0,
+                  icon: Icons.backup,
+                  text: AppLocalizations.of(context).backup_messages,
+                ),
+                popupMenuItem(
+                  context,
+                  value: 1,
+                  icon: Icons.restore,
+                  text: AppLocalizations.of(context).restore_messages,
+                ),
+                popupMenuItem(
+                  context,
+                  value: 2,
                   icon: Icons.message,
                   text: AppLocalizations.of(context).clear_messages,
                 ),
                 popupMenuItem(
                   context,
-                  value: 1,
+                  value: 3,
                   icon: Icons.clear_all,
                   text: AppLocalizations.of(context).clear_all_data,
                 ),
@@ -202,7 +250,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void showLoadingDialog(BuildContext context, String text) {
+  void showLoadingDialog(String text) {
     if (!isLoadingDialogShown) {
       loadingDialog(context, text: text, dismissible: false);
       setState(() {
@@ -211,27 +259,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void closeLoadingDialog(BuildContext context) {
+  void closeLoadingDialog() {
     if (isLoadingDialogShown) {
       Navigator.pop(context);
       setState(() {
         isLoadingDialogShown = false;
       });
     }
-  }
-
-  void clearMessages() {
-    MessageModel.save([]);
-    setState(() {
-      messages.clear();
-    });
-  }
-
-  void resetUserID() async {
-    String newUserID = getRandomString(10);
-    await SharedPreference.setString(SharedPreference.userID, newUserID);
-    setState(() {
-      userID = newUserID;
-    });
   }
 }
