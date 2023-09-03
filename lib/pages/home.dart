@@ -1,3 +1,4 @@
+import 'package:aichat/widgets/widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -5,6 +6,8 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../models/message.dart';
 import '../utils/ai.dart';
 import '../utils/date.dart';
+import '../utils/shared_preferences.dart';
+import '../utils/text.dart';
 import '../widgets/message.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -23,11 +26,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   ScrollController scrollController = ScrollController();
 
+  String userID = "";
   List<MessageModel> messages = [];
 
   @override
   void initState() {
     super.initState();
+    userID = widget.userID;
     messages = widget.messages;
   }
 
@@ -36,6 +41,38 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("AI Chat"),
+        actions: [
+          PopupMenuButton(
+            onSelected: (value) {
+              switch (value) {
+                case 0:
+                  clearMessages();
+                  break;
+                case 1:
+                  clearMessages();
+                  resetUserID();
+                  break;
+                default:
+              }
+            },
+            itemBuilder: (context) {
+              return [
+                popupMenuItem(
+                  context,
+                  value: 0,
+                  icon: Icons.message,
+                  text: AppLocalizations.of(context).clear_messages,
+                ),
+                popupMenuItem(
+                  context,
+                  value: 1,
+                  icon: Icons.clear_all,
+                  text: AppLocalizations.of(context).clear_all_data,
+                ),
+              ];
+            },
+          )
+        ],
       ),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -97,9 +134,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                             );
                           });
-                          String response = await AI
-                              .of(context)
-                              .sendMessage(widget.userID, text);
+                          String response =
+                              await AI.of(context).sendMessage(userID, text);
                           setState(() {
                             messages.add(
                               MessageModel(
@@ -148,5 +184,20 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  void clearMessages() {
+    MessageModel.save([]);
+    setState(() {
+      messages.clear();
+    });
+  }
+
+  void resetUserID() async {
+    String newUserID = getRandomString(10);
+    await SharedPreference.setString(SharedPreference.userID, newUserID);
+    setState(() {
+      userID = newUserID;
+    });
   }
 }

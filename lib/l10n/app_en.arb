@@ -6,5 +6,7 @@
     },
     "today": "Today",
     "yesterday": "Testerday",
-    "an_error_occurred": "An error occurred! Please try again later"
+    "an_error_occurred": "An error occurred! Please try again later",
+    "clear_messages": "Clear Messages",
+    "clear_all_data": "Clear All Data"
 }
