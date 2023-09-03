@@ -2,6 +2,17 @@
 
 An ai chat for flutter.
 
+## Supported Platforms
+
+| Platform              | Support            |
+| --------------------- | ------------------ |
+| Android               | :heavy_check_mark: |
+| IOS                   | :heavy_check_mark: |
+| MacOS                 | :heavy_check_mark: |
+| Windows               | :heavy_check_mark: |
+| Linux                 | :heavy_check_mark: |
+| Web                   | :x:                |
+
 ## Getting Started
 
 - Create new brain in (brainshop)[https://brainshop.ai/brain/new]
