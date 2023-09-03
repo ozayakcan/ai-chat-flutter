@@ -59,3 +59,19 @@ void loadingDialog(
     },
   );
 }
+
+class ScaffoldSnackbar {
+  ScaffoldSnackbar(this.context);
+  final BuildContext context;
+
+  factory ScaffoldSnackbar.of(BuildContext context) {
+    return ScaffoldSnackbar(context);
+  }
+  void show(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+  }
+}
