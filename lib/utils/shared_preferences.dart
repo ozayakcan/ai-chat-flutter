@@ -5,6 +5,29 @@ class SharedPreference {
   static const messagesString = "message";
   static const userID = "userID";
 
+  static Future<Set<String>> getKeys() async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      return sharedPreferences.getKeys();
+    } catch (e) {
+      return Future.error(e);
+    }
+  }
+
+  static Future<Object?> get(
+    String key, {
+    Object? defaultValue,
+  }) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      return sharedPreferences.get(key) ?? defaultValue;
+    } catch (e) {
+      return Future.error(e);
+    }
+  }
+
   static Future<bool> setString(String key, String value) async {
     try {
       SharedPreferences sharedPreferences =
@@ -46,6 +69,52 @@ class SharedPreference {
       SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       return sharedPreferences.getBool(key) ?? defaultValue;
+    } catch (e) {
+      return Future.error(e);
+    }
+  }
+
+  static Future<bool> setDouble(String key, double value) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      return await sharedPreferences.setDouble(key, value);
+    } catch (e) {
+      return Future.error(e);
+    }
+  }
+
+  static Future<double?> getDouble(
+    String key, {
+    double? defaultValue,
+  }) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      return sharedPreferences.getDouble(key) ?? defaultValue;
+    } catch (e) {
+      return Future.error(e);
+    }
+  }
+
+  static Future<bool> setInt(String key, int value) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      return await sharedPreferences.setInt(key, value);
+    } catch (e) {
+      return Future.error(e);
+    }
+  }
+
+  static Future<int?> getInt(
+    String key, {
+    int? defaultValue,
+  }) async {
+    try {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      return sharedPreferences.getInt(key) ?? defaultValue;
     } catch (e) {
       return Future.error(e);
     }
