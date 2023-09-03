@@ -4,21 +4,25 @@ import '../utils/shared_preferences.dart';
 
 class MessageModel {
   String message;
-  bool isSender = false;
+  bool isAI = false;
   DateTime date;
 
   MessageModel({
     required this.message,
-    required this.isSender,
+    required this.isAI,
     DateTime? messageDate,
   }) : date = messageDate ?? DateTime.now();
 
+  static String get messageStr => "message";
+  static String get isAIStr => "isAI";
+  static String get dateStr => "date";
+
   static MessageModel fromJson(Map data) {
-    int? dateTimeInt = data["date"] as int?;
-    bool? isSenderBool = bool.tryParse((data["isSender"] as String?) ?? "true");
+    int? dateTimeInt = data[dateStr] as int?;
+    bool? isAIBool = bool.tryParse((data[isAIStr] as String?) ?? "false");
     return MessageModel(
-      message: (data["message"] as String?) ?? "",
-      isSender: isSenderBool ?? true,
+      message: (data[messageStr] as String?) ?? "",
+      isAI: isAIBool ?? true,
       messageDate: dateTimeInt != null
           ? DateTime.fromMillisecondsSinceEpoch(dateTimeInt)
           : DateTime.now(),
@@ -27,9 +31,9 @@ class MessageModel {
 
   Map toJson() {
     return {
-      "message": message,
-      "isSender": isSender.toString(),
-      "date": date.millisecondsSinceEpoch,
+      messageStr: message,
+      isAIStr: isAI.toString(),
+      dateStr: date.millisecondsSinceEpoch,
     };
   }
 

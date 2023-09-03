@@ -68,7 +68,7 @@ class MessageWidget extends StatelessWidget {
           TextSpan(
             text: msg,
             style: TextStyle(
-              color: messageModel.isSender ? Colors.white : Colors.black,
+              color: messageModel.isAI ? Colors.black : Colors.white,
               fontSize: 14,
             ),
           ),
@@ -83,14 +83,14 @@ class MessageWidget extends StatelessWidget {
           const SizedBox(height: 30),
           Flexible(
               child: Row(
-            mainAxisAlignment: messageModel.isSender
-                ? MainAxisAlignment.end
-                : MainAxisAlignment.start,
-            crossAxisAlignment: messageModel.isSender
-                ? CrossAxisAlignment.end
-                : CrossAxisAlignment.start,
+            mainAxisAlignment: messageModel.isAI
+                ? MainAxisAlignment.start
+                : MainAxisAlignment.end,
+            crossAxisAlignment: messageModel.isAI
+                ? CrossAxisAlignment.start
+                : CrossAxisAlignment.end,
             children: [
-              if (!messageModel.isSender)
+              if (messageModel.isAI)
                 Transform(
                   alignment: Alignment.center,
                   transform: Matrix4.rotationY(math.pi),
@@ -106,16 +106,16 @@ class MessageWidget extends StatelessWidget {
                     left: 14,
                   ),
                   decoration: BoxDecoration(
-                    color: messageModel.isSender ? Colors.cyan : Colors.grey,
+                    color: messageModel.isAI ? Colors.grey : Colors.cyan,
                     borderRadius: BorderRadius.only(
-                      topLeft: messageModel.isSender
-                          ? const Radius.circular(18)
-                          : Radius.zero,
-                      topRight: const Radius.circular(18),
-                      bottomLeft: const Radius.circular(18),
-                      bottomRight: messageModel.isSender
+                      topLeft: messageModel.isAI
                           ? Radius.zero
                           : const Radius.circular(18),
+                      topRight: const Radius.circular(18),
+                      bottomLeft: const Radius.circular(18),
+                      bottomRight: messageModel.isAI
+                          ? const Radius.circular(18)
+                          : Radius.zero,
                     ),
                   ),
                   child: Column(
@@ -132,11 +132,11 @@ class MessageWidget extends StatelessWidget {
                         child: Text(
                           DateFormat("kk:mm").format(messageModel.date),
                           style: TextStyle(
-                            color: messageModel.isSender
-                                ? Color.fromARGB(200, Colors.white.red,
-                                    Colors.white.green, Colors.white.blue)
-                                : Color.fromARGB(200, Colors.black.red,
-                                    Colors.black.green, Colors.black.blue),
+                            color: messageModel.isAI
+                                ? Color.fromARGB(200, Colors.black.red,
+                                    Colors.black.green, Colors.black.blue)
+                                : Color.fromARGB(200, Colors.white.red,
+                                    Colors.white.green, Colors.white.blue),
                             fontSize: 10,
                           ),
                         ),
@@ -145,7 +145,7 @@ class MessageWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              if (messageModel.isSender)
+              if (!messageModel.isAI)
                 Transform(
                   alignment: Alignment.center,
                   transform: Matrix4.rotationX(math.pi),

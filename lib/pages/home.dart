@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             messages.add(
                               MessageModel(
                                 message: text,
-                                isSender: true,
+                                isAI: false,
                               ),
                             );
                           });
@@ -104,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             messages.add(
                               MessageModel(
                                 message: response,
-                                isSender: false,
+                                isAI: true,
                               ),
                             );
                           });
@@ -122,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               MessageModel(
                                 message: AppLocalizations.of(context)
                                     .an_error_occurred,
-                                isSender: false,
+                                isAI: false,
                               ),
                             );
                           });
