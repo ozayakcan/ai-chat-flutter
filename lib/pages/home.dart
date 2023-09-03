@@ -29,6 +29,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String userID = "";
   List<MessageModel> messages = [];
 
+  bool isLoadingDialogShown = false;
+
   @override
   void initState() {
     super.initState();
@@ -46,11 +48,25 @@ class _MyHomePageState extends State<MyHomePage> {
             onSelected: (value) {
               switch (value) {
                 case 0:
-                  clearMessages();
+                  showLoadingDialog(
+                    context,
+                    AppLocalizations.of(context).clearing_messages,
+                  );
+                  Future.delayed(const Duration(seconds: 2), () {
+                    clearMessages();
+                    closeLoadingDialog(context);
+                  });
                   break;
                 case 1:
-                  clearMessages();
-                  resetUserID();
+                  showLoadingDialog(
+                    context,
+                    AppLocalizations.of(context).clearing_all_data,
+                  );
+                  Future.delayed(const Duration(seconds: 2), () {
+                    clearMessages();
+                    resetUserID();
+                    closeLoadingDialog(context);
+                  });
                   break;
                 default:
               }
@@ -184,6 +200,24 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  void showLoadingDialog(BuildContext context, String text) {
+    if (!isLoadingDialogShown) {
+      loadingDialog(context, text: text, dismissible: false);
+      setState(() {
+        isLoadingDialogShown = true;
+      });
+    }
+  }
+
+  void closeLoadingDialog(BuildContext context) {
+    if (isLoadingDialogShown) {
+      Navigator.pop(context);
+      setState(() {
+        isLoadingDialogShown = false;
+      });
+    }
   }
 
   void clearMessages() {

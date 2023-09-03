@@ -30,3 +30,32 @@ PopupMenuItem popupMenuItem(
     ),
   );
 }
+
+void loadingDialog(
+  BuildContext context, {
+  String? text,
+  bool dismissible = true,
+}) {
+  showDialog(
+    context: context,
+    barrierDismissible: dismissible,
+    builder: (context) {
+      return Dialog(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircularProgressIndicator(),
+              if (text != null)
+                const SizedBox(
+                  height: 10,
+                ),
+              if (text != null) Text(text),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
