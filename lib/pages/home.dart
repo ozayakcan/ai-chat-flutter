@@ -229,7 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           setState(() {
                             messages.add(
                               MessageModel(
-                                message: text,
+                                realMessage: text,
                                 isAI: false,
                               ),
                             );
@@ -239,7 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           setState(() {
                             messages.add(
                               MessageModel(
-                                message: response,
+                                realMessage: response,
                                 isAI: true,
                               ),
                             );
@@ -256,7 +256,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           setState(() {
                             messages.add(
                               MessageModel(
-                                message: AppLocalizations.of(context)
+                                realMessage: AppLocalizations.of(context)
                                     .an_error_occurred,
                                 isAI: false,
                               ),

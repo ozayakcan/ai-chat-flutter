@@ -5,12 +5,17 @@ import '../utils/text.dart';
 
 class MessageModel {
   String id;
-  String message;
+  String realMessage;
   bool isAI = false;
   DateTime date;
 
+  String get message {
+    RegExp tipsRegExp = RegExp("<tips>(.+?)</tips>");
+    return realMessage.replaceAll(tipsRegExp, "");
+  }
+
   MessageModel({
-    required this.message,
+    required this.realMessage,
     required this.isAI,
     String? messageID,
     DateTime? messageDate,
@@ -27,7 +32,7 @@ class MessageModel {
     bool? isAIBool = bool.tryParse((data[isAIStr] as String?) ?? "false");
     return MessageModel(
       messageID: (data[idStr] as String?) ?? "",
-      message: (data[messageStr] as String?) ?? "",
+      realMessage: (data[messageStr] as String?) ?? "",
       isAI: isAIBool ?? true,
       messageDate: dateTimeInt != null
           ? DateTime.fromMillisecondsSinceEpoch(dateTimeInt)
@@ -38,7 +43,7 @@ class MessageModel {
   Map toJson() {
     return {
       idStr: id,
-      messageStr: message,
+      messageStr: realMessage,
       isAIStr: isAI.toString(),
       dateStr: date.millisecondsSinceEpoch,
     };
