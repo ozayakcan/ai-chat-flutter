@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:aichat/utils/encryption.dart';
 import 'package:aichat/utils/platform.dart';
 import 'package:aichat/widgets/widgets.dart';
 import 'package:file_picker/file_picker.dart';
@@ -16,6 +17,8 @@ import 'text.dart';
 typedef OnUserIDChanged = Function(String newUserID);
 
 class Data {
+  static String get _extension => "oacb";
+
   static Future<void> clearMessages({required VoidCallback onCleared}) async {
     await MessageModel.save([]);
     onCleared.call();
@@ -33,7 +36,7 @@ class Data {
     required ScaffoldSnackbar scaffoldSnackbar,
     required AppLocalizations appLocalizations,
   }) async {
-    String backupfileName = "ai_chat_backup.json";
+    String backupfileName = "ai_chat_backup.$_extension";
     final Directory directory = await getApplicationDocumentsDirectory();
     List<MessageModel> messages = await MessageModel.get();
     Map<String, Object?> data = {
@@ -43,7 +46,7 @@ class Data {
     };
     if (ThisPlatform.get == Platforms.mobile) {
       final File file = File('${directory.path}/$backupfileName');
-      await file.writeAsString(jsonEncode(data));
+      await file.writeAsString(Encryption.encrypt(jsonEncode(data)));
       if (!await FlutterFileDialog.isPickDirectorySupported()) {
         if (kDebugMode) {
           print("Picking directory not supported");
@@ -58,7 +61,7 @@ class Data {
         await FlutterFileDialog.saveFileToDirectory(
           directory: pickedDirectory,
           data: file.readAsBytesSync(),
-          mimeType: "json",
+          mimeType: _extension,
           fileName: backupfileName,
           replace: true,
         );
@@ -73,7 +76,7 @@ class Data {
 
       if (outputFile != null) {
         File file = File(outputFile);
-        file.writeAsStringSync(jsonEncode(data));
+        file.writeAsStringSync(Encryption.encrypt(jsonEncode(data)));
       } else {
         scaffoldSnackbar.show(appLocalizations.backing_up_messages_cancelled);
       }
@@ -89,11 +92,16 @@ class Data {
   }) async {
     if (ThisPlatform.get == Platforms.mobile ||
         ThisPlatform.get == Platforms.desktop) {
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        allowedExtensions: [
+          _extension,
+        ],
+        type: FileType.custom,
+      );
       if (result != null) {
         try {
           File file = File(result.files.single.path!);
-          String resultStr = file.readAsStringSync();
+          String resultStr = Encryption.decrypt(file.readAsStringSync());
           Map<String, dynamic> map = jsonDecode(resultStr);
           String? data = map["data"] as String?;
           List<dynamic>? oldMessagesString =

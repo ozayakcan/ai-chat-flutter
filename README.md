@@ -24,5 +24,10 @@ An ai chat for flutter.
 class Secrets {
   static String get brainShopBrainID => "your_brain_id";
   static String get brainShopApiKey => "your_brain_shop_api_key";
+
+  // 16 bit, base64 string
+  // You can use this site to generate keys: https://generate.plus/en/base64
+  static String get encrpytionKey => "your_16_bit_base64_key";
+  static String get encrpytionIV => "your_16_bit_base64_iv";
 }
 ```
