@@ -6,6 +6,7 @@ import '../models/message.dart';
 import '../utils/ai.dart';
 import '../utils/data.dart';
 import '../utils/date.dart';
+import '../utils/shared_preferences.dart';
 import '../widgets/message.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -40,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("AI Chat $userID"),
+        title: const Text("AI Chat"),
         actions: [
           PopupMenuButton(
             onSelected: (value) async {
@@ -49,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
               switch (value) {
                 case 0:
                   showLoadingDialog(
-                    appLocalizations.backing_up_messages,
+                    appLocalizations.backing_up_data,
                   );
                   await Data.backupData(
                     scaffoldSnackbar: scaffoldSnackbar,
@@ -59,16 +60,29 @@ class _MyHomePageState extends State<MyHomePage> {
                   break;
                 case 1:
                   showLoadingDialog(
-                    appLocalizations.restoring_messages,
+                    appLocalizations.restoring_data,
                   );
                   await Data.restoreData(
                     scaffoldSnackbar: scaffoldSnackbar,
                     appLocalizations: appLocalizations,
-                    onMessagedRestored: () async {
-                      List<MessageModel> allMessages = await MessageModel.get();
-                      setState(() {
-                        messages = allMessages;
-                      });
+                    onRestored: (keyList) async {
+                      for (final key in keyList) {
+                        if (key == SharedPreference.messagesString) {
+                          List<MessageModel> allMessages =
+                              await MessageModel.get();
+                          setState(() {
+                            messages = allMessages;
+                          });
+                        } else if (key == SharedPreference.userID) {
+                          String? oldUserID = await SharedPreference.getString(
+                              SharedPreference.userID);
+                          if (oldUserID != null) {
+                            setState(() {
+                              userID = oldUserID;
+                            });
+                          }
+                        }
+                      }
                     },
                   );
                   closeLoadingDialog();
@@ -113,13 +127,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   context,
                   value: 0,
                   icon: Icons.backup,
-                  text: AppLocalizations.of(context).backup_messages,
+                  text: AppLocalizations.of(context).backup_data,
                 ),
                 popupMenuItem(
                   context,
                   value: 1,
                   icon: Icons.restore,
-                  text: AppLocalizations.of(context).restore_messages,
+                  text: AppLocalizations.of(context).restore_data,
                 ),
                 popupMenuItem(
                   context,
