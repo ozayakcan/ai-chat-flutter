@@ -299,7 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
           messages.add(
             MessageModel(
               realMessage: AppLocalizations.of(context).an_error_occurred,
-              isAI: false,
+              isAI: true,
             ),
           );
         });
