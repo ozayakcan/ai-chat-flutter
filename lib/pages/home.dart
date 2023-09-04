@@ -1,3 +1,4 @@
+import 'package:aichat/widgets/dialogs.dart';
 import 'package:aichat/widgets/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +48,8 @@ class _MyHomePageState extends State<MyHomePage> {
             onSelected: (value) async {
               ScaffoldSnackbar scaffoldSnackbar = ScaffoldSnackbar.of(context);
               AppLocalizations appLocalizations = AppLocalizations.of(context);
+
+              MyAlertDialog myAlertDialog = MyAlertDialog.of(context);
               switch (value) {
                 case 0:
                   showLoadingDialog(
@@ -59,33 +62,52 @@ class _MyHomePageState extends State<MyHomePage> {
                   closeLoadingDialog();
                   break;
                 case 1:
-                  showLoadingDialog(
-                    appLocalizations.restoring_data,
+                  myAlertDialog.show(
+                    title: appLocalizations.restore_data,
+                    description: appLocalizations.restore_data_alert_desc,
+                    actions: [
+                      TextButton(
+                        onPressed: () async {
+                          myAlertDialog.close();
+                          showLoadingDialog(
+                            appLocalizations.restoring_data,
+                          );
+                          await Data.restoreData(
+                            scaffoldSnackbar: scaffoldSnackbar,
+                            appLocalizations: appLocalizations,
+                            onRestored: (keyList) async {
+                              for (final key in keyList) {
+                                if (key == SharedPreference.messagesString) {
+                                  List<MessageModel> allMessages =
+                                      await MessageModel.get();
+                                  setState(() {
+                                    messages = allMessages;
+                                  });
+                                } else if (key == SharedPreference.userID) {
+                                  String? oldUserID =
+                                      await SharedPreference.getString(
+                                          SharedPreference.userID);
+                                  if (oldUserID != null) {
+                                    setState(() {
+                                      userID = oldUserID;
+                                    });
+                                  }
+                                }
+                              }
+                            },
+                          );
+                          closeLoadingDialog();
+                        },
+                        child: Text(appLocalizations.yes),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          myAlertDialog.close();
+                        },
+                        child: Text(appLocalizations.no),
+                      ),
+                    ],
                   );
-                  await Data.restoreData(
-                    scaffoldSnackbar: scaffoldSnackbar,
-                    appLocalizations: appLocalizations,
-                    onRestored: (keyList) async {
-                      for (final key in keyList) {
-                        if (key == SharedPreference.messagesString) {
-                          List<MessageModel> allMessages =
-                              await MessageModel.get();
-                          setState(() {
-                            messages = allMessages;
-                          });
-                        } else if (key == SharedPreference.userID) {
-                          String? oldUserID = await SharedPreference.getString(
-                              SharedPreference.userID);
-                          if (oldUserID != null) {
-                            setState(() {
-                              userID = oldUserID;
-                            });
-                          }
-                        }
-                      }
-                    },
-                  );
-                  closeLoadingDialog();
                   break;
                 case 2:
                   showLoadingDialog(

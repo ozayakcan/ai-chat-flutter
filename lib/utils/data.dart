@@ -115,25 +115,16 @@ class Data {
             List<String> keyList = [];
             for (var key in map.keys) {
               if (key != "data") {
+                bool restored = true;
                 dynamic value = map[key];
-                if (key == SharedPreference.messagesString) {
-                  List<dynamic> oldMessagesString = value as List;
-                  List<MessageModel> currentMessages = await MessageModel.get();
-                  List<MessageModel> oldMessages = oldMessagesString
-                      .map((e) => MessageModel.fromJson(jsonDecode(e)))
-                      .toList();
-                  for (int i = oldMessages.length - 1; i >= 0; i--) {
-                    int findIndex = currentMessages.indexWhere(
-                        (element) => element.id == oldMessages[i].id);
-                    if (findIndex == -1) {
-                      currentMessages.insert(0, oldMessages[i]);
-                    }
+                if (value is List) {
+                  if (value.first is String) {
+                    await SharedPreference.setStringList(
+                        key, value.map((e) => e.toString()).toList());
+                    keyList.add(key);
+                  } else {
+                    restored = false;
                   }
-                  await MessageModel.save(currentMessages);
-                  if (kDebugMode) {
-                    print("Messages: ${oldMessagesString.toString()}");
-                  }
-                  keyList.add(key);
                 } else if (value is String) {
                   await SharedPreference.setString(key, value);
                   keyList.add(key);
@@ -147,6 +138,9 @@ class Data {
                   await SharedPreference.setInt(key, value);
                   keyList.add(key);
                 } else {
+                  restored = false;
+                }
+                if (!restored) {
                   if (kDebugMode) {
                     print("This data not restored: $key : ${value.toString()}");
                   }
