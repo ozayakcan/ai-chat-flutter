@@ -213,6 +213,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       focusNode: focusNode,
                       autofocus: true,
                       controller: textEditingController,
+                      keyboardType: TextInputType.text,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (val) async {
+                        await sendMessage();
+                      },
                       decoration: InputDecoration(
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25.0),
@@ -223,51 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      if (textEditingController.text.isNotEmpty) {
-                        try {
-                          String text = textEditingController.text;
-                          setState(() {
-                            messages.add(
-                              MessageModel(
-                                realMessage: text,
-                                isAI: false,
-                              ),
-                            );
-                          });
-                          String response =
-                              await AI.of(context).sendMessage(userID, text);
-                          setState(() {
-                            messages.add(
-                              MessageModel(
-                                realMessage: response,
-                                isAI: true,
-                              ),
-                            );
-                          });
-                          scrollController.animateTo(
-                            0.0,
-                            curve: Curves.easeOut,
-                            duration: const Duration(milliseconds: 300),
-                          );
-                        } catch (e) {
-                          if (kDebugMode) {
-                            print("Message Error: $e");
-                          }
-                          setState(() {
-                            messages.add(
-                              MessageModel(
-                                realMessage: AppLocalizations.of(context)
-                                    .an_error_occurred,
-                                isAI: false,
-                              ),
-                            );
-                          });
-                        } finally {
-                          textEditingController.text = "";
-                          focusNode.requestFocus();
-                          await MessageModel.save(messages);
-                        }
-                      }
+                      await sendMessage();
                     },
                     style: ElevatedButton.styleFrom(
                       shape: const CircleBorder(),
@@ -301,6 +262,52 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         isLoadingDialogShown = false;
       });
+    }
+  }
+
+  sendMessage() async {
+    String text = textEditingController.text;
+    if (text.isNotEmpty) {
+      try {
+        setState(() {
+          messages.add(
+            MessageModel(
+              realMessage: text,
+              isAI: false,
+            ),
+          );
+        });
+        String response = await AI.of(context).sendMessage(userID, text);
+        setState(() {
+          messages.add(
+            MessageModel(
+              realMessage: response,
+              isAI: true,
+            ),
+          );
+        });
+        scrollController.animateTo(
+          0.0,
+          curve: Curves.easeOut,
+          duration: const Duration(milliseconds: 300),
+        );
+      } catch (e) {
+        if (kDebugMode) {
+          print("Message Error: $e");
+        }
+        setState(() {
+          messages.add(
+            MessageModel(
+              realMessage: AppLocalizations.of(context).an_error_occurred,
+              isAI: false,
+            ),
+          );
+        });
+      } finally {
+        textEditingController.text = "";
+        focusNode.requestFocus();
+        await MessageModel.save(messages);
+      }
     }
   }
 }
