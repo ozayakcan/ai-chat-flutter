@@ -5,7 +5,7 @@
         "description": "Example of MMMM dd, yyyy: April 3, 2023"
     },
     "today": "Today",
-    "yesterday": "Testerday",
+    "yesterday": "Yesterday",
     "an_error_occurred": "An error occurred! Please try again later",
     "clear_messages": "Clear Messages",
     "clearing_messages": "Clearing messages...",
