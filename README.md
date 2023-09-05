@@ -31,3 +31,20 @@ class Secrets {
   static String get encrpytionIV => "your_16_bit_base64_iv";
 }
 ```
+
+### Android
+
+- Create android/key.properties file & add this lines & edit it for your keystore.jks properties:
+
+```
+releaseStorePassword=your-store-password
+releaseKeyPassword=your-key-password
+releaseKeyAlias=your-alias
+# Copy your keystore.jks file to root-project-folder/android/keystore.jks
+releaseStoreFile=../keystore.jks
+debugStorePassword=android
+debugKeyPassword=android
+debugKeyAlias=androiddebugkey
+# Replace UserFolder with your user folder name
+debugStoreFile=C:\\Users\\OzayAkcan\\.android\\debug.keystore
+```
