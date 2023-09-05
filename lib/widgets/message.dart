@@ -82,79 +82,81 @@ class MessageWidget extends StatelessWidget {
         children: [
           const SizedBox(height: 30),
           Flexible(
-              child: Row(
-            mainAxisAlignment: messageModel.isAI
-                ? MainAxisAlignment.start
-                : MainAxisAlignment.end,
-            crossAxisAlignment: messageModel.isAI
-                ? CrossAxisAlignment.start
-                : CrossAxisAlignment.end,
-            children: [
-              if (messageModel.isAI)
-                Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.rotationY(math.pi),
-                  child: CustomPaint(
-                    painter: CustomShape(Colors.grey),
-                  ),
-                ),
-              Flexible(
-                child: Container(
-                  padding: const EdgeInsets.only(
-                    top: 14,
-                    right: 14,
-                    left: 14,
-                  ),
-                  decoration: BoxDecoration(
-                    color: messageModel.isAI ? Colors.grey : Colors.cyan,
-                    borderRadius: BorderRadius.only(
-                      topLeft: messageModel.isAI
-                          ? Radius.zero
-                          : const Radius.circular(18),
-                      topRight: const Radius.circular(18),
-                      bottomLeft: const Radius.circular(18),
-                      bottomRight: messageModel.isAI
-                          ? const Radius.circular(18)
-                          : Radius.zero,
+            child: Row(
+              mainAxisAlignment: messageModel.isAI
+                  ? MainAxisAlignment.start
+                  : MainAxisAlignment.end,
+              crossAxisAlignment: messageModel.isAI
+                  ? CrossAxisAlignment.start
+                  : CrossAxisAlignment.end,
+              children: [
+                if (messageModel.isAI)
+                  Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.rotationY(math.pi),
+                    child: CustomPaint(
+                      painter: CustomShape(Colors.grey),
                     ),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      RichText(
-                        text: TextSpan(
-                          children: msgList,
-                        ),
+                Flexible(
+                  child: Container(
+                    padding: const EdgeInsets.only(
+                      top: 14,
+                      right: 14,
+                      left: 14,
+                    ),
+                    decoration: BoxDecoration(
+                      color: messageModel.isAI ? Colors.grey : Colors.cyan,
+                      borderRadius: BorderRadius.only(
+                        topLeft: messageModel.isAI
+                            ? Radius.zero
+                            : const Radius.circular(18),
+                        topRight: const Radius.circular(18),
+                        bottomLeft: const Radius.circular(18),
+                        bottomRight: messageModel.isAI
+                            ? const Radius.circular(18)
+                            : Radius.zero,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Text(
-                          DateFormat("kk:mm").format(messageModel.date),
-                          style: TextStyle(
-                            color: messageModel.isAI
-                                ? Color.fromARGB(200, Colors.black.red,
-                                    Colors.black.green, Colors.black.blue)
-                                : Color.fromARGB(200, Colors.white.red,
-                                    Colors.white.green, Colors.white.blue),
-                            fontSize: 10,
+                    ),
+                    child: IntrinsicWidth(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              children: msgList,
+                            ),
                           ),
-                        ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 10, top: 2),
+                            child: Text(
+                              DateFormat("kk:mm").format(messageModel.date),
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                color: messageModel.isAI
+                                    ? Colors.black.withAlpha(200)
+                                    : Colors.white.withAlpha(200),
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-              if (!messageModel.isAI)
-                Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.rotationX(math.pi),
-                  child: CustomPaint(
-                    painter: CustomShape(Colors.cyan),
+                if (!messageModel.isAI)
+                  Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.rotationX(math.pi),
+                    child: CustomPaint(
+                      painter: CustomShape(Colors.cyan),
+                    ),
                   ),
-                ),
-            ],
-          )),
+              ],
+            ),
+          ),
         ],
       ),
     );
