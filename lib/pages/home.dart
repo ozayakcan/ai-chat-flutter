@@ -261,39 +261,51 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 10, right: 5, left: 5),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      focusNode: focusNode,
-                      autofocus: true,
-                      controller: textEditingController,
-                      keyboardType: TextInputType.text,
-                      textInputAction: TextInputAction.done,
-                      onSubmitted: (val) async {
-                        await sendMessage();
-                      },
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25.0),
+              child: SizedBox(
+                height: 55,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        focusNode: focusNode,
+                        autofocus: true,
+                        controller: textEditingController,
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (val) async {
+                          await sendMessage();
+                        },
+                        style: const TextStyle(
+                          fontSize: 13,
+                          height: 1,
                         ),
-                        hintText: AppLocalizations.of(context).type_something,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(25.0),
+                          ),
+                          hintText: AppLocalizations.of(context).type_something,
+                        ),
                       ),
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      await sendMessage();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(20),
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Icon(Icons.send),
-                  )
-                ],
+                    const SizedBox(width: 5),
+                    ElevatedButton(
+                      onPressed: () async {
+                        await sendMessage();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(10),
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Center(
+                          child: Icon(
+                        Icons.send,
+                        size: 30,
+                      )),
+                    )
+                  ],
+                ),
               ),
             )
           ],
