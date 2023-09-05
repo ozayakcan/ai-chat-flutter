@@ -77,12 +77,15 @@ class MessageWidget extends StatelessWidget {
     }
     return Padding(
       padding: const EdgeInsets.only(right: 18.0, left: 50, top: 15, bottom: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          const SizedBox(height: 30),
-          Flexible(
-            child: Row(
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Row(
+          mainAxisAlignment: messageModel.isAI
+              ? MainAxisAlignment.start
+              : MainAxisAlignment.end,
+          children: [
+            const SizedBox(height: 30),
+            Row(
               mainAxisAlignment: messageModel.isAI
                   ? MainAxisAlignment.start
                   : MainAxisAlignment.end,
@@ -98,51 +101,49 @@ class MessageWidget extends StatelessWidget {
                       painter: CustomShape(Colors.grey),
                     ),
                   ),
-                Flexible(
-                  child: Container(
-                    padding: const EdgeInsets.only(
-                      top: 14,
-                      right: 14,
-                      left: 14,
+                Container(
+                  padding: const EdgeInsets.only(
+                    top: 14,
+                    right: 14,
+                    left: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: messageModel.isAI ? Colors.grey : Colors.cyan,
+                    borderRadius: BorderRadius.only(
+                      topLeft: messageModel.isAI
+                          ? Radius.zero
+                          : const Radius.circular(18),
+                      topRight: const Radius.circular(18),
+                      bottomLeft: const Radius.circular(18),
+                      bottomRight: messageModel.isAI
+                          ? const Radius.circular(18)
+                          : Radius.zero,
                     ),
-                    decoration: BoxDecoration(
-                      color: messageModel.isAI ? Colors.grey : Colors.cyan,
-                      borderRadius: BorderRadius.only(
-                        topLeft: messageModel.isAI
-                            ? Radius.zero
-                            : const Radius.circular(18),
-                        topRight: const Radius.circular(18),
-                        bottomLeft: const Radius.circular(18),
-                        bottomRight: messageModel.isAI
-                            ? const Radius.circular(18)
-                            : Radius.zero,
-                      ),
-                    ),
-                    child: IntrinsicWidth(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                              children: msgList,
+                  ),
+                  child: IntrinsicWidth(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            children: msgList,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10, top: 2),
+                          child: Text(
+                            DateFormat("kk:mm").format(messageModel.date),
+                            textAlign: TextAlign.end,
+                            style: TextStyle(
+                              color: messageModel.isAI
+                                  ? Colors.black.withAlpha(200)
+                                  : Colors.white.withAlpha(200),
+                              fontSize: 10,
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 10, top: 2),
-                            child: Text(
-                              DateFormat("kk:mm").format(messageModel.date),
-                              textAlign: TextAlign.end,
-                              style: TextStyle(
-                                color: messageModel.isAI
-                                    ? Colors.black.withAlpha(200)
-                                    : Colors.white.withAlpha(200),
-                                fontSize: 10,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -156,8 +157,8 @@ class MessageWidget extends StatelessWidget {
                   ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -173,19 +174,17 @@ class MessageDateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      child: Padding(
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(18)),
+          color: Colors.blue,
+        ),
         padding: const EdgeInsets.all(10),
-        child: Container(
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(18)),
-            color: Colors.blue,
-          ),
-          padding: const EdgeInsets.all(10),
-          child: Text(
-            getDateString(context, date),
-            style: const TextStyle(color: Colors.white, fontSize: 12),
-          ),
+        child: Text(
+          getDateString(context, date),
+          style: const TextStyle(color: Colors.white, fontSize: 12),
         ),
       ),
     );
