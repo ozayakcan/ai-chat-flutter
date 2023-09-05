@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import '../models/message.dart';
 import '../utils/ai.dart';
 import '../utils/data.dart';
@@ -52,40 +53,49 @@ class _MyHomePageState extends State<MyHomePage> {
             IconButton(
               icon: const Icon(Icons.copy),
               onPressed: () async {
-                ScaffoldSnackbar scaffoldSnackbar = ScaffoldSnackbar(context);
+                ScaffoldSnackbar scaffoldSnackbar =
+                    ScaffoldSnackbar.of(context);
                 AppLocalizations appLocalizations =
                     AppLocalizations.of(context);
-                List<MessageModel> selectedMessages =
-                    messages.where((element) => element.selected).toList();
-                String text = "";
-                if (selectedMessages.isEmpty) {
-                  scaffoldSnackbar.show(appLocalizations.no_message_selected);
-                  return;
-                } else if (selectedMessages.length == 1) {
-                  text = selectedMessages.first.message;
-                } else {
-                  for (var msg in selectedMessages) {
-                    String dateFormat =
-                        DateFormat(appLocalizations.date_format_full)
-                            .format(msg.date);
-                    text += msg.isAI
-                        ? appLocalizations.message_ai(dateFormat, msg.message)
-                        : appLocalizations.message_you(dateFormat, msg.message);
-                  }
-                }
-                await Clipboard.setData(ClipboardData(text: text));
+                String? selectedMessages = getSelectedMessages(context);
+                if (selectedMessages != null) {
+                  await Clipboard.setData(
+                      ClipboardData(text: selectedMessages));
 
-                for (int i = 0; i < messages.length; i++) {
-                  if (messages[i].selected) {
-                    setState(() {
-                      messages[i].selected = false;
-                    });
+                  setState(() {
+                    messagesSelected = false;
+                  });
+
+                  for (int i = 0; i < messages.length; i++) {
+                    if (messages[i].selected) {
+                      setState(() {
+                        messages[i].selected = false;
+                      });
+                    }
                   }
+                  scaffoldSnackbar.show(appLocalizations.messages_copied);
+                } else {
+                  scaffoldSnackbar.show(appLocalizations.no_message_selected);
                 }
-                setState(() {
-                  messagesSelected = false;
-                });
-                scaffoldSnackbar.show(appLocalizations.messages_copied);
+              },
+            ),
+          if (messagesSelected)
+            IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: () async {
+                ScaffoldSnackbar scaffoldSnackbar =
+                    ScaffoldSnackbar.of(context);
+                AppLocalizations appLocalizations =
+                    AppLocalizations.of(context);
+                String? selectedMessages = getSelectedMessages(context);
+                if (selectedMessages != null) {
+                  await Share.share(
+                    selectedMessages,
+                    subject: appLocalizations.messages_share_title("AI Chat"),
+                  );
+                } else {
+                  scaffoldSnackbar.show(appLocalizations.no_message_selected);
+                }
               },
             ),
           PopupMenuButton(
@@ -387,5 +397,26 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       messagesSelected = selectedMessageIndex > 0;
     });
+  }
+
+  String? getSelectedMessages(BuildContext context) {
+    AppLocalizations appLocalizations = AppLocalizations.of(context);
+    List<MessageModel> selectedMessages =
+        messages.where((element) => element.selected).toList();
+    String text = "";
+    if (selectedMessages.isEmpty) {
+      return null;
+    } else if (selectedMessages.length == 1) {
+      text = selectedMessages.first.message;
+    } else {
+      for (var msg in selectedMessages) {
+        String dateFormat =
+            DateFormat(appLocalizations.date_format_full).format(msg.date);
+        text += msg.isAI
+            ? appLocalizations.message_ai(dateFormat, msg.message)
+            : appLocalizations.message_you(dateFormat, msg.message);
+      }
+    }
+    return text;
   }
 }

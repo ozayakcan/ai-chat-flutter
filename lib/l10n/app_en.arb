@@ -49,5 +49,16 @@
             }
         }
     },
-    "messages_copied": "Messages copied to clipboard!"
+    "messages_copied": "Messages copied to clipboard!",
+    "messages_share_title": "{app_name} Conversation",
+    "@messages_share_title": {
+        "placeholders": {
+            "app_name": {
+                "type": "String"
+            }
+        }
+    },
+    "messages_shared": "Messages shared succesfully!",
+    "messages_share_dismissed": "Message sharing cancelled!",
+    "messages_sharing_unavailable": "Message sharing unavailable!"
 }
