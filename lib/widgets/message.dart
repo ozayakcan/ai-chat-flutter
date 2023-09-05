@@ -76,88 +76,95 @@ class MessageWidget extends StatelessWidget {
       }
     }
     return Padding(
-      padding: const EdgeInsets.only(right: 18.0, left: 50, top: 15, bottom: 5),
-      child: SizedBox(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Container(
+        decoration: messageModel.selected
+            ? BoxDecoration(color: Colors.cyan.withAlpha(50))
+            : null,
         width: MediaQuery.of(context).size.width,
-        child: Row(
-          mainAxisAlignment: messageModel.isAI
-              ? MainAxisAlignment.start
-              : MainAxisAlignment.end,
-          children: [
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: messageModel.isAI
-                  ? MainAxisAlignment.start
-                  : MainAxisAlignment.end,
-              crossAxisAlignment: messageModel.isAI
-                  ? CrossAxisAlignment.start
-                  : CrossAxisAlignment.end,
-              children: [
-                if (messageModel.isAI)
-                  Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.rotationY(math.pi),
-                    child: CustomPaint(
-                      painter: CustomShape(Colors.grey),
+        child: Padding(
+          padding:
+              const EdgeInsets.only(right: 18.0, left: 50, top: 15, bottom: 5),
+          child: Row(
+            mainAxisAlignment: messageModel.isAI
+                ? MainAxisAlignment.start
+                : MainAxisAlignment.end,
+            children: [
+              const SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: messageModel.isAI
+                    ? MainAxisAlignment.start
+                    : MainAxisAlignment.end,
+                crossAxisAlignment: messageModel.isAI
+                    ? CrossAxisAlignment.start
+                    : CrossAxisAlignment.end,
+                children: [
+                  if (messageModel.isAI)
+                    Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationY(math.pi),
+                      child: CustomPaint(
+                        painter: CustomShape(Colors.grey),
+                      ),
                     ),
-                  ),
-                Container(
-                  padding: const EdgeInsets.only(
-                    top: 14,
-                    right: 14,
-                    left: 14,
-                  ),
-                  decoration: BoxDecoration(
-                    color: messageModel.isAI ? Colors.grey : Colors.cyan,
-                    borderRadius: BorderRadius.only(
-                      topLeft: messageModel.isAI
-                          ? Radius.zero
-                          : const Radius.circular(18),
-                      topRight: const Radius.circular(18),
-                      bottomLeft: const Radius.circular(18),
-                      bottomRight: messageModel.isAI
-                          ? const Radius.circular(18)
-                          : Radius.zero,
+                  Container(
+                    padding: const EdgeInsets.only(
+                      top: 14,
+                      right: 14,
+                      left: 14,
                     ),
-                  ),
-                  child: IntrinsicWidth(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            children: msgList,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10, top: 2),
-                          child: Text(
-                            DateFormat("kk:mm").format(messageModel.date),
-                            textAlign: TextAlign.end,
-                            style: TextStyle(
-                              color: messageModel.isAI
-                                  ? Colors.black.withAlpha(200)
-                                  : Colors.white.withAlpha(200),
-                              fontSize: 10,
+                    decoration: BoxDecoration(
+                      color: messageModel.isAI ? Colors.grey : Colors.cyan,
+                      borderRadius: BorderRadius.only(
+                        topLeft: messageModel.isAI
+                            ? Radius.zero
+                            : const Radius.circular(18),
+                        topRight: const Radius.circular(18),
+                        bottomLeft: const Radius.circular(18),
+                        bottomRight: messageModel.isAI
+                            ? const Radius.circular(18)
+                            : Radius.zero,
+                      ),
+                    ),
+                    child: IntrinsicWidth(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              children: msgList,
                             ),
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 10, top: 2),
+                            child: Text(
+                              DateFormat("kk:mm").format(messageModel.date),
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                color: messageModel.isAI
+                                    ? Colors.black.withAlpha(200)
+                                    : Colors.white.withAlpha(200),
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                if (!messageModel.isAI)
-                  Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.rotationX(math.pi),
-                    child: CustomPaint(
-                      painter: CustomShape(Colors.cyan),
+                  if (!messageModel.isAI)
+                    Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationX(math.pi),
+                      child: CustomPaint(
+                        painter: CustomShape(Colors.cyan),
+                      ),
                     ),
-                  ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

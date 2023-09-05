@@ -8,6 +8,7 @@ class MessageModel {
   String realMessage;
   bool isAI = false;
   DateTime date;
+  bool selected = false;
 
   String get message {
     RegExp tipsRegExp = RegExp("<tips>(.+?)</tips>");
@@ -60,7 +61,10 @@ class MessageModel {
   }
 
   static Future<bool> save(List<MessageModel> messages) async {
-    List<String> list = messages.map((e) => e.toJsonString()).toList();
+    List<String> list = messages.map((e) {
+      e.selected = false;
+      return e.toJsonString();
+    }).toList();
     return await SharedPreference.setStringList(
         SharedPreference.messagesString, list);
   }

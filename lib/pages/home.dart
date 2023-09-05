@@ -2,7 +2,9 @@ import 'package:aichat/widgets/dialogs.dart';
 import 'package:aichat/widgets/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import '../models/message.dart';
 import '../utils/ai.dart';
 import '../utils/data.dart';
@@ -31,6 +33,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool isLoadingDialogShown = false;
 
+  bool messagesSelected = false;
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +48,46 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text("AI Chat"),
         actions: [
+          if (messagesSelected)
+            IconButton(
+              icon: const Icon(Icons.copy),
+              onPressed: () async {
+                ScaffoldSnackbar scaffoldSnackbar = ScaffoldSnackbar(context);
+                AppLocalizations appLocalizations =
+                    AppLocalizations.of(context);
+                List<MessageModel> selectedMessages =
+                    messages.where((element) => element.selected).toList();
+                String text = "";
+                if (selectedMessages.isEmpty) {
+                  scaffoldSnackbar.show(appLocalizations.no_message_selected);
+                  return;
+                } else if (selectedMessages.length == 1) {
+                  text = selectedMessages.first.message;
+                } else {
+                  for (var msg in selectedMessages) {
+                    String dateFormat =
+                        DateFormat(appLocalizations.date_format_full)
+                            .format(msg.date);
+                    text += msg.isAI
+                        ? appLocalizations.message_ai(dateFormat, msg.message)
+                        : appLocalizations.message_you(dateFormat, msg.message);
+                  }
+                }
+                await Clipboard.setData(ClipboardData(text: text));
+
+                for (int i = 0; i < messages.length; i++) {
+                  if (messages[i].selected) {
+                    setState(() {
+                      messages[i].selected = false;
+                    });
+                  }
+                }
+                setState(() {
+                  messagesSelected = false;
+                });
+                scaffoldSnackbar.show(appLocalizations.messages_copied);
+              },
+            ),
           PopupMenuButton(
             onSelected: (value) async {
               ScaffoldSnackbar scaffoldSnackbar = ScaffoldSnackbar.of(context);
@@ -195,8 +239,19 @@ class _MyHomePageState extends State<MyHomePage> {
                                 getDateString(context, messages[i - 1].date))
                               MessageDateWidget(date: messages[i].date),
                           if (i == 0) MessageDateWidget(date: messages[i].date),
-                          MessageWidget(
-                            messageModel: messages[i],
+                          InkWell(
+                            hoverColor: Colors.transparent,
+                            onTap: () {
+                              if (messagesSelected) {
+                                selectMessage(i);
+                              }
+                            },
+                            onLongPress: () {
+                              selectMessage(i);
+                            },
+                            child: MessageWidget(
+                              messageModel: messages[i],
+                            ),
                           ),
                         ],
                       )
@@ -309,5 +364,16 @@ class _MyHomePageState extends State<MyHomePage> {
         await MessageModel.save(messages);
       }
     }
+  }
+
+  void selectMessage(int i) {
+    setState(() {
+      messages[i].selected = !messages[i].selected;
+    });
+    int selectedMessageIndex =
+        messages.indexWhere((element) => element.selected == true);
+    setState(() {
+      messagesSelected = selectedMessageIndex > 0;
+    });
   }
 }
