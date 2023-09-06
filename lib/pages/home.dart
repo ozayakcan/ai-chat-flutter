@@ -91,10 +91,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                   break;
                 case 2:
-                  clearMessages(appLocalizations);
+                  clearMessages(appLocalizations, scaffoldSnackbar);
                   break;
                 case 3:
-                  clearAllData(appLocalizations);
+                  clearAllData(appLocalizations, scaffoldSnackbar);
                   break;
                 default:
               }
@@ -480,21 +480,30 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  clearMessages(AppLocalizations appLocalizations) {
+  clearMessages(
+    AppLocalizations appLocalizations,
+    ScaffoldSnackbar scaffoldSnackBar,
+  ) {
     showLoadingDialog(
       appLocalizations.clearing_messages,
     );
     Future.delayed(const Duration(seconds: 2), () async {
-      await Data.clearMessages(onCleared: () {
-        setState(() {
-          messages.clear();
-        });
-      });
+      await Data.clearMessages(
+        onCleared: () {
+          setState(() {
+            messages.clear();
+          });
+        },
+      );
       closeLoadingDialog();
+      scaffoldSnackBar.show(appLocalizations.messages_cleared);
     });
   }
 
-  clearAllData(AppLocalizations appLocalizations) {
+  clearAllData(
+    AppLocalizations appLocalizations,
+    ScaffoldSnackbar scaffoldSnackbar,
+  ) {
     showLoadingDialog(
       appLocalizations.clearing_all_data,
     );
@@ -510,6 +519,7 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       });
       closeLoadingDialog();
+      scaffoldSnackbar.show(appLocalizations.data_cleared);
     });
   }
 }

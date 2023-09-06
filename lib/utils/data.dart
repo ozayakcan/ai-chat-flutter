@@ -72,6 +72,7 @@ class Data {
           fileName: backupfileName,
           replace: true,
         );
+        scaffoldSnackbar.show(appLocalizations.data_backed_up);
       } else {
         scaffoldSnackbar.show(appLocalizations.backing_up_data_cancelled);
       }
@@ -84,6 +85,7 @@ class Data {
       if (outputFile != null) {
         File file = File(outputFile);
         file.writeAsStringSync(Encryption.encrypt(jsonEncode(data)));
+        scaffoldSnackbar.show(appLocalizations.data_backed_up);
       } else {
         scaffoldSnackbar.show(appLocalizations.backing_up_data_cancelled);
       }
@@ -148,6 +150,7 @@ class Data {
               }
             }
             onRestored.call(keyList);
+            scaffoldSnackbar.show(appLocalizations.data_restored);
           } else {
             scaffoldSnackbar
                 .show(appLocalizations.restoring_data_failed_unsupported_file);
