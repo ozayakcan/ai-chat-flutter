@@ -91,10 +91,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                   break;
                 case 2:
-                  clearMessages(appLocalizations, scaffoldSnackbar);
+                  clearMessages(
+                    appLocalizations,
+                    scaffoldSnackbar,
+                    myAlertDialog,
+                  );
                   break;
                 case 3:
-                  clearAllData(appLocalizations, scaffoldSnackbar);
+                  clearAllData(
+                    appLocalizations,
+                    scaffoldSnackbar,
+                    myAlertDialog,
+                  );
                   break;
                 default:
               }
@@ -483,43 +491,82 @@ class _MyHomePageState extends State<MyHomePage> {
   clearMessages(
     AppLocalizations appLocalizations,
     ScaffoldSnackbar scaffoldSnackBar,
+    MyAlertDialog myAlertDialog,
   ) {
-    showLoadingDialog(
-      appLocalizations.clearing_messages,
+    myAlertDialog.show(
+      title: appLocalizations.clear_messages,
+      description: appLocalizations.clear_messages_desc,
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            showLoadingDialog(
+              appLocalizations.clearing_messages,
+            );
+            Future.delayed(const Duration(seconds: 2), () async {
+              await Data.clearMessages(
+                onCleared: () {
+                  setState(() {
+                    messages.clear();
+                  });
+                },
+              );
+              closeLoadingDialog();
+              scaffoldSnackBar.show(appLocalizations.messages_cleared);
+            });
+          },
+          child: Text(appLocalizations.yes),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text(appLocalizations.no),
+        ),
+      ],
     );
-    Future.delayed(const Duration(seconds: 2), () async {
-      await Data.clearMessages(
-        onCleared: () {
-          setState(() {
-            messages.clear();
-          });
-        },
-      );
-      closeLoadingDialog();
-      scaffoldSnackBar.show(appLocalizations.messages_cleared);
-    });
   }
 
   clearAllData(
     AppLocalizations appLocalizations,
     ScaffoldSnackbar scaffoldSnackbar,
+    MyAlertDialog myAlertDialog,
   ) {
-    showLoadingDialog(
-      appLocalizations.clearing_all_data,
+    myAlertDialog.show(
+      title: appLocalizations.clear_all_data,
+      description: appLocalizations.clear_all_data_desc,
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+
+            showLoadingDialog(
+              appLocalizations.clearing_all_data,
+            );
+            Future.delayed(const Duration(seconds: 2), () async {
+              await Data.clearMessages(onCleared: () {
+                setState(() {
+                  messages.clear();
+                });
+              });
+              await Data.resetUserID(onResetUserID: (newUserID) {
+                setState(() {
+                  userID = newUserID;
+                });
+              });
+              closeLoadingDialog();
+              scaffoldSnackbar.show(appLocalizations.data_cleared);
+            });
+          },
+          child: Text(appLocalizations.yes),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text(appLocalizations.no),
+        ),
+      ],
     );
-    Future.delayed(const Duration(seconds: 2), () async {
-      await Data.clearMessages(onCleared: () {
-        setState(() {
-          messages.clear();
-        });
-      });
-      await Data.resetUserID(onResetUserID: (newUserID) {
-        setState(() {
-          userID = newUserID;
-        });
-      });
-      closeLoadingDialog();
-      scaffoldSnackbar.show(appLocalizations.data_cleared);
-    });
   }
 }
