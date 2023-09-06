@@ -52,7 +52,7 @@ debugStorePassword=android
 debugKeyPassword=android
 debugKeyAlias=androiddebugkey
 # Replace UserFolder with your user folder name
-debugStoreFile=C:\\Users\\OzayAkcan\\.android\\debug.keystore
+debugStoreFile=C:\\Users\\UserFolder\\.android\\debug.keystore
 ```
 
 ### Building
