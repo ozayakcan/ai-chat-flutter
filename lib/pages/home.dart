@@ -396,6 +396,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 setState(() {
                   messagesSelected = false;
                 });
+                MessageModel.save(messages);
               } else {
                 scaffoldSnackbar.show(appLocalizations.no_message_selected);
               }
