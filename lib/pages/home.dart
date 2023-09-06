@@ -45,6 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations appLocalizations = AppLocalizations.of(context);
+    ScaffoldSnackbar scaffoldSnackbar = ScaffoldSnackbar.of(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text("AI Chat"),
@@ -53,195 +55,46 @@ class _MyHomePageState extends State<MyHomePage> {
             IconButton(
               icon: const Icon(Icons.copy),
               onPressed: () async {
-                ScaffoldSnackbar scaffoldSnackbar =
-                    ScaffoldSnackbar.of(context);
-                AppLocalizations appLocalizations =
-                    AppLocalizations.of(context);
-                String? selectedMessages = getSelectedMessagesAsString(context);
-                if (selectedMessages != null) {
-                  await Clipboard.setData(
-                      ClipboardData(text: selectedMessages));
-
-                  setState(() {
-                    messagesSelected = false;
-                  });
-
-                  for (int i = 0; i < messages.length; i++) {
-                    if (messages[i].selected) {
-                      setState(() {
-                        messages[i].selected = false;
-                      });
-                    }
-                  }
-                  scaffoldSnackbar.show(appLocalizations.messages_copied);
-                } else {
-                  scaffoldSnackbar.show(appLocalizations.no_message_selected);
-                }
+                await copyMessages(appLocalizations, scaffoldSnackbar);
               },
             ),
           if (messagesSelected)
             IconButton(
               icon: const Icon(Icons.share),
               onPressed: () async {
-                ScaffoldSnackbar scaffoldSnackbar =
-                    ScaffoldSnackbar.of(context);
-                AppLocalizations appLocalizations =
-                    AppLocalizations.of(context);
-                String? selectedMessages = getSelectedMessagesAsString(context);
-                if (selectedMessages != null) {
-                  await Share.share(
-                    selectedMessages,
-                    subject: appLocalizations.messages_share_title("AI Chat"),
-                  );
-                } else {
-                  scaffoldSnackbar.show(appLocalizations.no_message_selected);
-                }
+                await shareMessages(appLocalizations, scaffoldSnackbar);
               },
             ),
           if (messagesSelected)
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () async {
-                ScaffoldSnackbar scaffoldSnackbar =
-                    ScaffoldSnackbar.of(context);
-                AppLocalizations appLocalizations =
-                    AppLocalizations.of(context);
-                MyAlertDialog myAlertDialog = MyAlertDialog.of(context);
-                myAlertDialog.show(
-                  title: appLocalizations.delete_messages,
-                  description: appLocalizations.delete_messages_desc,
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        showLoadingDialog(appLocalizations.deleting_messages);
-                        Future.delayed(const Duration(seconds: 2), () {
-                          List<MessageModel> selectedMessages =
-                              getSelectedMessages();
-                          if (selectedMessages.isNotEmpty) {
-                            for (var msg in selectedMessages) {
-                              setState(() {
-                                messages.removeWhere(
-                                    (element) => element.id == msg.id);
-                              });
-                            }
-                            setState(() {
-                              messagesSelected = false;
-                            });
-                          } else {
-                            scaffoldSnackbar
-                                .show(appLocalizations.no_message_selected);
-                          }
-                          closeLoadingDialog();
-                        });
-                      },
-                      child: Text(appLocalizations.yes),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text(appLocalizations.no),
-                    ),
-                  ],
+                await deleteMessages(
+                  context,
+                  appLocalizations,
+                  scaffoldSnackbar,
                 );
               },
             ),
           PopupMenuButton(
             onSelected: (value) async {
-              ScaffoldSnackbar scaffoldSnackbar = ScaffoldSnackbar.of(context);
-              AppLocalizations appLocalizations = AppLocalizations.of(context);
-
               MyAlertDialog myAlertDialog = MyAlertDialog.of(context);
               switch (value) {
                 case 0:
-                  showLoadingDialog(
-                    appLocalizations.backing_up_data,
-                  );
-                  await Data.backupData(
-                    scaffoldSnackbar: scaffoldSnackbar,
-                    appLocalizations: appLocalizations,
-                  );
-                  closeLoadingDialog();
+                  await backupData(appLocalizations, scaffoldSnackbar);
                   break;
                 case 1:
-                  myAlertDialog.show(
-                    title: appLocalizations.restore_data,
-                    description: appLocalizations.restore_data_alert_desc,
-                    actions: [
-                      TextButton(
-                        onPressed: () async {
-                          Navigator.pop(context);
-                          showLoadingDialog(
-                            appLocalizations.restoring_data,
-                          );
-                          await Data.restoreData(
-                            scaffoldSnackbar: scaffoldSnackbar,
-                            appLocalizations: appLocalizations,
-                            onRestored: (keyList) async {
-                              for (final key in keyList) {
-                                if (key == SharedPreference.messagesString) {
-                                  List<MessageModel> allMessages =
-                                      await MessageModel.get();
-                                  setState(() {
-                                    messages = allMessages;
-                                  });
-                                } else if (key == SharedPreference.userID) {
-                                  String? oldUserID =
-                                      await SharedPreference.getString(
-                                          SharedPreference.userID);
-                                  if (oldUserID != null) {
-                                    setState(() {
-                                      userID = oldUserID;
-                                    });
-                                  }
-                                }
-                              }
-                            },
-                          );
-                          closeLoadingDialog();
-                        },
-                        child: Text(appLocalizations.yes),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(appLocalizations.no),
-                      ),
-                    ],
+                  restoreData(
+                    appLocalizations,
+                    scaffoldSnackbar,
+                    myAlertDialog,
                   );
                   break;
                 case 2:
-                  showLoadingDialog(
-                    appLocalizations.clearing_messages,
-                  );
-                  Future.delayed(const Duration(seconds: 2), () async {
-                    await Data.clearMessages(onCleared: () {
-                      setState(() {
-                        messages.clear();
-                      });
-                    });
-                    closeLoadingDialog();
-                  });
+                  clearMessages(appLocalizations);
                   break;
                 case 3:
-                  showLoadingDialog(
-                    appLocalizations.clearing_all_data,
-                  );
-                  Future.delayed(const Duration(seconds: 2), () async {
-                    await Data.clearMessages(onCleared: () {
-                      setState(() {
-                        messages.clear();
-                      });
-                    });
-                    await Data.resetUserID(onResetUserID: (newUserID) {
-                      setState(() {
-                        userID = newUserID;
-                      });
-                    });
-                    closeLoadingDialog();
-                  });
+                  clearAllData(appLocalizations);
                   break;
                 default:
               }
@@ -252,25 +105,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   context,
                   value: 0,
                   icon: Icons.backup,
-                  text: AppLocalizations.of(context).backup_data,
+                  text: appLocalizations.backup_data,
                 ),
                 popupMenuItem(
                   context,
                   value: 1,
                   icon: Icons.restore,
-                  text: AppLocalizations.of(context).restore_data,
+                  text: appLocalizations.restore_data,
                 ),
                 popupMenuItem(
                   context,
                   value: 2,
                   icon: Icons.message,
-                  text: AppLocalizations.of(context).clear_messages,
+                  text: appLocalizations.clear_messages,
                 ),
                 popupMenuItem(
                   context,
                   value: 3,
                   icon: Icons.clear_all,
-                  text: AppLocalizations.of(context).clear_all_data,
+                  text: appLocalizations.clear_all_data,
                 ),
               ];
             },
@@ -332,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.done,
                         onSubmitted: (val) async {
-                          await sendMessage();
+                          await sendMessage(appLocalizations);
                         },
                         style: const TextStyle(
                           fontSize: 13,
@@ -342,14 +195,14 @@ class _MyHomePageState extends State<MyHomePage> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25.0),
                           ),
-                          hintText: AppLocalizations.of(context).type_something,
+                          hintText: appLocalizations.type_something,
                         ),
                       ),
                     ),
                     const SizedBox(width: 5),
                     ElevatedButton(
                       onPressed: () async {
-                        await sendMessage();
+                        await sendMessage(appLocalizations);
                       },
                       style: ElevatedButton.styleFrom(
                         shape: const CircleBorder(),
@@ -391,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  sendMessage() async {
+  sendMessage(AppLocalizations appLocalizations) async {
     String text = textEditingController.text;
     if (text.isNotEmpty) {
       try {
@@ -424,7 +277,7 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           messages.add(
             MessageModel(
-              realMessage: AppLocalizations.of(context).an_error_occurred,
+              realMessage: appLocalizations.an_error_occurred,
               isAI: true,
             ),
           );
@@ -459,8 +312,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  String? getSelectedMessagesAsString(BuildContext context) {
-    AppLocalizations appLocalizations = AppLocalizations.of(context);
+  String? getSelectedMessagesAsString(AppLocalizations appLocalizations) {
     List<MessageModel> selectedMessages =
         messages.where((element) => element.selected).toList();
     String text = "";
@@ -478,5 +330,185 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
     return text;
+  }
+
+  copyMessages(
+    AppLocalizations appLocalizations,
+    ScaffoldSnackbar scaffoldSnackbar,
+  ) async {
+    String? selectedMessages = getSelectedMessagesAsString(appLocalizations);
+    if (selectedMessages != null) {
+      await Clipboard.setData(ClipboardData(text: selectedMessages));
+
+      setState(() {
+        messagesSelected = false;
+      });
+
+      for (int i = 0; i < messages.length; i++) {
+        if (messages[i].selected) {
+          setState(() {
+            messages[i].selected = false;
+          });
+        }
+      }
+      scaffoldSnackbar.show(appLocalizations.messages_copied);
+    } else {
+      scaffoldSnackbar.show(appLocalizations.no_message_selected);
+    }
+  }
+
+  shareMessages(
+    AppLocalizations appLocalizations,
+    ScaffoldSnackbar scaffoldSnackbar,
+  ) async {
+    String? selectedMessages = getSelectedMessagesAsString(appLocalizations);
+    if (selectedMessages != null) {
+      await Share.share(
+        selectedMessages,
+        subject: appLocalizations.messages_share_title("AI Chat"),
+      );
+    } else {
+      scaffoldSnackbar.show(appLocalizations.no_message_selected);
+    }
+  }
+
+  deleteMessages(
+    BuildContext context,
+    AppLocalizations appLocalizations,
+    ScaffoldSnackbar scaffoldSnackbar,
+  ) {
+    MyAlertDialog.of(context).show(
+      title: appLocalizations.delete_messages,
+      description: appLocalizations.delete_messages_desc,
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            showLoadingDialog(appLocalizations.deleting_messages);
+            Future.delayed(const Duration(seconds: 2), () {
+              List<MessageModel> selectedMessages = getSelectedMessages();
+              if (selectedMessages.isNotEmpty) {
+                for (var msg in selectedMessages) {
+                  setState(() {
+                    messages.removeWhere((element) => element.id == msg.id);
+                  });
+                }
+                setState(() {
+                  messagesSelected = false;
+                });
+              } else {
+                scaffoldSnackbar.show(appLocalizations.no_message_selected);
+              }
+              closeLoadingDialog();
+            });
+          },
+          child: Text(appLocalizations.yes),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text(appLocalizations.no),
+        ),
+      ],
+    );
+  }
+
+  backupData(
+    AppLocalizations appLocalizations,
+    ScaffoldSnackbar scaffoldSnackbar,
+  ) async {
+    showLoadingDialog(
+      appLocalizations.backing_up_data,
+    );
+    await Data.backupData(
+      scaffoldSnackbar: scaffoldSnackbar,
+      appLocalizations: appLocalizations,
+    );
+    closeLoadingDialog();
+  }
+
+  restoreData(
+    AppLocalizations appLocalizations,
+    ScaffoldSnackbar scaffoldSnackbar,
+    MyAlertDialog myAlertDialog,
+  ) {
+    myAlertDialog.show(
+      title: appLocalizations.restore_data,
+      description: appLocalizations.restore_data_alert_desc,
+      actions: [
+        TextButton(
+          onPressed: () async {
+            Navigator.pop(context);
+            showLoadingDialog(
+              appLocalizations.restoring_data,
+            );
+            await Data.restoreData(
+              scaffoldSnackbar: scaffoldSnackbar,
+              appLocalizations: appLocalizations,
+              onRestored: (keyList) async {
+                for (final key in keyList) {
+                  if (key == SharedPreference.messagesString) {
+                    List<MessageModel> allMessages = await MessageModel.get();
+                    setState(() {
+                      messages = allMessages;
+                    });
+                  } else if (key == SharedPreference.userID) {
+                    String? oldUserID = await SharedPreference.getString(
+                        SharedPreference.userID);
+                    if (oldUserID != null) {
+                      setState(() {
+                        userID = oldUserID;
+                      });
+                    }
+                  }
+                }
+              },
+            );
+            closeLoadingDialog();
+          },
+          child: Text(appLocalizations.yes),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text(appLocalizations.no),
+        ),
+      ],
+    );
+  }
+
+  clearMessages(AppLocalizations appLocalizations) {
+    showLoadingDialog(
+      appLocalizations.clearing_messages,
+    );
+    Future.delayed(const Duration(seconds: 2), () async {
+      await Data.clearMessages(onCleared: () {
+        setState(() {
+          messages.clear();
+        });
+      });
+      closeLoadingDialog();
+    });
+  }
+
+  clearAllData(AppLocalizations appLocalizations) {
+    showLoadingDialog(
+      appLocalizations.clearing_all_data,
+    );
+    Future.delayed(const Duration(seconds: 2), () async {
+      await Data.clearMessages(onCleared: () {
+        setState(() {
+          messages.clear();
+        });
+      });
+      await Data.resetUserID(onResetUserID: (newUserID) {
+        setState(() {
+          userID = newUserID;
+        });
+      });
+      closeLoadingDialog();
+    });
   }
 }

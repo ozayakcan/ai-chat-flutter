@@ -7,9 +7,10 @@ String getDateString(BuildContext context, DateTime date) {
   final today = DateTime(now.year, now.month, now.day);
   final yesterday = DateTime(now.year, now.month, now.day - 1);
   final aDate = DateTime(date.year, date.month, date.day);
+  AppLocalizations appLocalizations = AppLocalizations.of(context);
   return aDate == today
-      ? AppLocalizations.of(context).today
+      ? appLocalizations.today
       : (aDate == yesterday
-          ? AppLocalizations.of(context).yesterday
-          : DateFormat(AppLocalizations.of(context).date_format).format(date));
+          ? appLocalizations.yesterday
+          : DateFormat(appLocalizations.date_format).format(date));
 }
