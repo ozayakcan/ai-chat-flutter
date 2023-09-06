@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ScaffoldSnackbar.of(context);
                 AppLocalizations appLocalizations =
                     AppLocalizations.of(context);
-                String? selectedMessages = getSelectedMessages(context);
+                String? selectedMessages = getSelectedMessagesAsString(context);
                 if (selectedMessages != null) {
                   await Clipboard.setData(
                       ClipboardData(text: selectedMessages));
@@ -87,7 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ScaffoldSnackbar.of(context);
                 AppLocalizations appLocalizations =
                     AppLocalizations.of(context);
-                String? selectedMessages = getSelectedMessages(context);
+                String? selectedMessages = getSelectedMessagesAsString(context);
                 if (selectedMessages != null) {
                   await Share.share(
                     selectedMessages,
@@ -96,6 +96,55 @@ class _MyHomePageState extends State<MyHomePage> {
                 } else {
                   scaffoldSnackbar.show(appLocalizations.no_message_selected);
                 }
+              },
+            ),
+          if (messagesSelected)
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () async {
+                ScaffoldSnackbar scaffoldSnackbar =
+                    ScaffoldSnackbar.of(context);
+                AppLocalizations appLocalizations =
+                    AppLocalizations.of(context);
+                MyAlertDialog myAlertDialog = MyAlertDialog.of(context);
+                myAlertDialog.show(
+                  title: appLocalizations.delete_messages,
+                  description: appLocalizations.delete_messages_desc,
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        showLoadingDialog(appLocalizations.deleting_messages);
+                        Future.delayed(const Duration(seconds: 2), () {
+                          List<MessageModel> selectedMessages =
+                              getSelectedMessages();
+                          if (selectedMessages.isNotEmpty) {
+                            for (var msg in selectedMessages) {
+                              setState(() {
+                                messages.removeWhere(
+                                    (element) => element.id == msg.id);
+                              });
+                            }
+                            setState(() {
+                              messagesSelected = false;
+                            });
+                          } else {
+                            scaffoldSnackbar
+                                .show(appLocalizations.no_message_selected);
+                          }
+                          closeLoadingDialog();
+                        });
+                      },
+                      child: Text(appLocalizations.yes),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(appLocalizations.no),
+                    ),
+                  ],
+                );
               },
             ),
           PopupMenuButton(
@@ -122,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     actions: [
                       TextButton(
                         onPressed: () async {
-                          myAlertDialog.close();
+                          Navigator.pop(context);
                           showLoadingDialog(
                             appLocalizations.restoring_data,
                           );
@@ -156,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       TextButton(
                         onPressed: () {
-                          myAlertDialog.close();
+                          Navigator.pop(context);
                         },
                         child: Text(appLocalizations.no),
                       ),
@@ -399,7 +448,18 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  String? getSelectedMessages(BuildContext context) {
+  List<MessageModel> getSelectedMessages() {
+    List<MessageModel> selectedMessages =
+        messages.where((element) => element.selected).toList();
+
+    if (selectedMessages.isEmpty) {
+      return [];
+    } else {
+      return selectedMessages;
+    }
+  }
+
+  String? getSelectedMessagesAsString(BuildContext context) {
     AppLocalizations appLocalizations = AppLocalizations.of(context);
     List<MessageModel> selectedMessages =
         messages.where((element) => element.selected).toList();

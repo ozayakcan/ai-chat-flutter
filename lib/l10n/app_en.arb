@@ -60,5 +60,8 @@
     },
     "messages_shared": "Messages shared succesfully!",
     "messages_share_dismissed": "Message sharing cancelled!",
-    "messages_sharing_unavailable": "Message sharing unavailable!"
+    "messages_sharing_unavailable": "Message sharing unavailable!",
+    "delete_messages": "Delete Messages",
+    "delete_messages_desc": "Are you sure you want to delete selected messages?",
+    "deleting_messages": "Deleting Messages"
 }

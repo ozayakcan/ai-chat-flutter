@@ -9,32 +9,22 @@ class MyAlertDialog {
   factory MyAlertDialog.of(BuildContext context) {
     return MyAlertDialog._(context);
   }
-  bool _isShown = false;
   void show({
     required String title,
     required String description,
     List<Widget>? actions,
+    bool barrierDismissible = true,
   }) {
-    if (!_isShown) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(title),
-            content: Text(description),
-            actions: actions,
-          );
-        },
-      );
-      _isShown = true;
-    }
-  }
-
-  void close() {
-    if (_isShown) {
-      Navigator.pop(context);
-      _isShown = false;
-    }
+    showDialog(
+      context: context,
+      barrierDismissible: barrierDismissible,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(description),
+          actions: actions,
+        );
+      },
+    );
   }
 }
