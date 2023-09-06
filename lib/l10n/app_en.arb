@@ -1,7 +1,7 @@
 {
     "type_something": "Type something...",
     "date_format": "MMMM dd, yyyy",
-    "date_format_full": "yyyy/mm/dd, kk:mm",
+    "date_format_full": "yyyy/MM/dd, kk:mm",
     "@date_format": {
         "description": "Example of MMMM dd, yyyy: April 3, 2023"
     },
