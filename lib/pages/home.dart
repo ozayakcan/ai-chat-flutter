@@ -395,7 +395,7 @@ class _MyHomePageState extends State<MyHomePage> {
     int selectedMessageIndex =
         messages.indexWhere((element) => element.selected == true);
     setState(() {
-      messagesSelected = selectedMessageIndex > 0;
+      messagesSelected = selectedMessageIndex >= 0;
     });
   }
 
