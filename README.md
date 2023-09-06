@@ -34,6 +34,12 @@ class Secrets {
 
 ### Android
 
+- Add this to android/local.properties
+
+```
+flutter.minSdkVersion=21
+```
+
 - Create android/key.properties file & add this lines & edit it for your keystore.jks properties:
 
 ```
