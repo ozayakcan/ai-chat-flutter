@@ -54,3 +54,11 @@ debugKeyAlias=androiddebugkey
 # Replace UserFolder with your user folder name
 debugStoreFile=C:\\Users\\OzayAkcan\\.android\\debug.keystore
 ```
+
+### Building
+
+- Command (Replace [platform] strings with your build platform without square brackets)
+
+```
+flutter build [platform] --release --obfuscate --split-debug-info=build\debug-info-[platform]
+```
