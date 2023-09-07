@@ -7,7 +7,12 @@ import '../utils/text.dart';
 import 'home.dart';
 
 class SplashPage extends StatefulWidget {
-  const SplashPage({super.key});
+  const SplashPage({
+    super.key,
+    required this.appName,
+  });
+
+  final String appName;
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -30,8 +35,10 @@ class _SplashPageState extends State<SplashPage> {
       List<MessageModel> messages = await MessageModel.get();
       navigator.pushAndRemoveUntil(
         MaterialPageRoute(
-            builder: (context) =>
-                MyHomePage(userID: realUserID, messages: messages)),
+            builder: (context) => MyHomePage(
+                appName: widget.appName,
+                userID: realUserID,
+                messages: messages)),
         (route) => false,
       );
     });

@@ -34,13 +34,14 @@ class Data {
   }
 
   static Future<void> backupData({
+    required String appName,
     required ScaffoldSnackbar scaffoldSnackbar,
     required AppLocalizations appLocalizations,
   }) async {
     String backupfileName = "ai_chat_backup.$_extension";
     final Directory directory = await getApplicationDocumentsDirectory();
     Map<String, dynamic> data = {
-      "data": "AI Chat",
+      "data": appName,
     };
     Set<String> keys = await SharedPreference.getKeys();
     for (var key in keys) {

@@ -14,8 +14,14 @@ import '../utils/shared_preferences.dart';
 import '../widgets/message.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.userID, required this.messages});
+  const MyHomePage({
+    super.key,
+    required this.appName,
+    required this.userID,
+    required this.messages,
+  });
 
+  final String appName;
   final String userID;
   final List<MessageModel> messages;
 
@@ -49,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ScaffoldSnackbar scaffoldSnackbar = ScaffoldSnackbar.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("AI Chat"),
+        title: Text(widget.appName),
         actions: [
           if (messagesSelected)
             IconButton(
@@ -373,7 +379,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (selectedMessages != null) {
       await Share.share(
         selectedMessages,
-        subject: appLocalizations.messages_share_title("AI Chat"),
+        subject: appLocalizations.messages_share_title(widget.appName),
       );
     } else {
       scaffoldSnackbar.show(appLocalizations.no_message_selected);
@@ -431,6 +437,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appLocalizations.backing_up_data,
     );
     await Data.backupData(
+      appName: widget.appName,
       scaffoldSnackbar: scaffoldSnackbar,
       appLocalizations: appLocalizations,
     );

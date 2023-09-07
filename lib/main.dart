@@ -3,16 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'pages/splash.dart';
 import 'utils/theme.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  String appName = packageInfo.appName;
+  runApp(MyApp(
+    appName: appName,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.appName});
+
+  final String appName;
 
   // This widget is the root of your application.
   @override
@@ -22,7 +30,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeModel>(
           builder: (context, ThemeModel themeNotifier, child) {
         return MaterialApp(
-          title: "AI Chat",
+          title: appName,
           theme: ThemeModel.light,
           darkTheme: ThemeModel.dark,
           themeMode: themeNotifier.isDark == null
@@ -44,7 +52,9 @@ class MyApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
           ],
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const SplashPage(),
+          home: SplashPage(
+            appName: appName,
+          ),
         );
       }),
     );

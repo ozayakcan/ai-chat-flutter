@@ -32,6 +32,36 @@ class Secrets {
 }
 ```
 
+### Renaming App
+
+```
+// Activate Plugin
+flutter pub global activate rename
+
+// Change package
+flutter pub global run rename --bundleId your.package.name
+
+// Change app name
+flutter pub global run rename --appname "Your App Name"
+
+// For single platform (Same usage with --bundleId)
+flutter pub global run rename --appname YourAppName --target ios
+flutter pub global run rename --appname YourAppName --target android
+flutter pub global run rename --appname YourAppName --target web
+flutter pub global run rename --appname YourAppName --target macOS
+flutter pub global run rename --appname YourAppName --target windows
+```
+
+- App name not changing properly on windows. You should manually change it.
+- Open windows/runner/main.cpp
+- Find this lines and change "AI Chat" with your app name.
+
+```
+  if (!window.Create(L"AI Chat", origin, size)) {
+    return EXIT_FAILURE;
+  }
+```
+
 ### Android
 
 - Add this to android/local.properties
