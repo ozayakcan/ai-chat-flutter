@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jumping_dot/jumping_dot.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../utils/date.dart';
@@ -31,9 +32,14 @@ class CustomShape extends CustomPainter {
 }
 
 class MessageWidget extends StatelessWidget {
-  const MessageWidget({super.key, required this.messageModel});
+  const MessageWidget({
+    super.key,
+    required this.messageModel,
+    this.isTyping = false,
+  });
 
   final MessageModel messageModel;
+  final bool isTyping;
   @override
   Widget build(BuildContext context) {
     final reg = RegExp("(?=<a)|(?<=/a>)");
@@ -75,6 +81,8 @@ class MessageWidget extends StatelessWidget {
         );
       }
     }
+    double msgPadding = 14;
+    double typingPadding = 3;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Container(
@@ -112,10 +120,10 @@ class MessageWidget extends StatelessWidget {
                       ),
                     Flexible(
                       child: Container(
-                        padding: const EdgeInsets.only(
-                          top: 14,
-                          right: 14,
-                          left: 14,
+                        padding: EdgeInsets.only(
+                          top: msgPadding,
+                          right: msgPadding,
+                          left: msgPadding,
                         ),
                         decoration: BoxDecoration(
                           color: messageModel.isAI ? Colors.grey : Colors.cyan,
@@ -135,25 +143,44 @@ class MessageWidget extends StatelessWidget {
                             mainAxisSize: MainAxisSize.max,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              RichText(
-                                text: TextSpan(
-                                  children: msgList,
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(bottom: 10, top: 2),
-                                child: Text(
-                                  DateFormat("kk:mm").format(messageModel.date),
-                                  textAlign: TextAlign.end,
-                                  style: TextStyle(
-                                    color: messageModel.isAI
-                                        ? Colors.black.withAlpha(200)
-                                        : Colors.white.withAlpha(200),
-                                    fontSize: 10,
+                              if (isTyping)
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    top: typingPadding,
+                                    left: typingPadding,
+                                    right: typingPadding,
+                                    bottom: msgPadding + typingPadding,
+                                  ),
+                                  child: JumpingDots(
+                                    color: Colors.white.withAlpha(170),
+                                    radius: 10,
+                                    numberOfDots: 3,
+                                    animationDuration:
+                                        const Duration(milliseconds: 200),
                                   ),
                                 ),
-                              ),
+                              if (!isTyping)
+                                RichText(
+                                  text: TextSpan(
+                                    children: msgList,
+                                  ),
+                                ),
+                              if (!isTyping)
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(bottom: 10, top: 2),
+                                  child: Text(
+                                    DateFormat("kk:mm")
+                                        .format(messageModel.date),
+                                    textAlign: TextAlign.end,
+                                    style: TextStyle(
+                                      color: messageModel.isAI
+                                          ? Colors.black.withAlpha(200)
+                                          : Colors.white.withAlpha(200),
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         ),
@@ -202,5 +229,14 @@ class MessageDateWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class TypingWidget extends StatelessWidget {
+  const TypingWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }

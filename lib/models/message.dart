@@ -41,6 +41,20 @@ class MessageModel {
     );
   }
 
+  static MessageModel empty({
+    required bool isAI,
+    String? realMessage,
+    String? messageID,
+    DateTime? messageDate,
+  }) {
+    return MessageModel(
+      realMessage: realMessage ?? "",
+      isAI: isAI,
+      messageDate: messageDate ?? DateTime.now(),
+      messageID: "0",
+    );
+  }
+
   Map toJson() {
     return {
       idStr: id,

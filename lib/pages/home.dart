@@ -42,6 +42,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool messagesSelected = false;
 
+  bool isTyping = false;
+
   @override
   void initState() {
     super.initState();
@@ -180,7 +182,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ),
                         ],
-                      )
+                      ),
+                    if (isTyping)
+                      MessageWidget(
+                        messageModel: MessageModel.empty(isAI: true),
+                        isTyping: true,
+                      ),
                   ],
                 ),
               ),
@@ -260,6 +267,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   sendMessage(AppLocalizations appLocalizations) async {
     String text = textEditingController.text;
+    textEditingController.text = "";
     if (text.isNotEmpty) {
       try {
         setState(() {
@@ -269,6 +277,7 @@ class _MyHomePageState extends State<MyHomePage> {
               isAI: false,
             ),
           );
+          isTyping = true;
         });
         String response = await AI.of(context).sendMessage(userID, text);
         setState(() {
@@ -297,8 +306,10 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         });
       } finally {
-        textEditingController.text = "";
         focusNode.requestFocus();
+        setState(() {
+          isTyping = false;
+        });
         await MessageModel.save(messages);
       }
     }
