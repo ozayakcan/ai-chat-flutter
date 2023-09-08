@@ -26,7 +26,7 @@ class Secrets {
   static String get brainShopApiKey => "your_brain_shop_api_key";
 
 
-  // For checking updates from github.
+  // For checking updates from github, your repo should be public.
   // Your release names should ends with your app version for this. Example release name: v0.3.8
   static String get githubReleaseBranch => "master"; // Your release branch name.
   
