@@ -100,7 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       null) {
                     myAlertDialog.show(
                       title: appLocalizations.up_to_date,
-                      description: appLocalizations.up_to_date_desc,
+                      description: appLocalizations
+                          .up_to_date_desc(widget.packageInfo.version),
                       actions: [
                         TextButton(
                           onPressed: () {

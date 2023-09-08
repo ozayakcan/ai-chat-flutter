@@ -62,7 +62,10 @@ class Github {
       if (currentRelease.name != latestRelease.name) {
         return myAlertDialog.show(
             title: appLocalizations.update_available,
-            description: appLocalizations.update_available_desc,
+            description: appLocalizations.update_available_desc(
+              currentRelease.name,
+              latestRelease.name,
+            ),
             descriptionWidgetTopMargin: 10,
             descriptionWidget: RichText(
               text: TextSpan(

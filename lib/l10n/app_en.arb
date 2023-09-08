@@ -71,7 +71,17 @@
     "delete_messages_desc": "Are you sure you want to delete selected messages?",
     "deleting_messages": "Deleting Messages",
     "update_available": "Update Available!",
-    "update_available_desc": "There is new update available.\n\nYou can manually download new version by selecting from list.\n\nIf launching url not supported in your platform. Just download link will be copied.",
+    "update_available_desc": "There is new update available.\n\nYou can manually download new version by selecting from list.\n\nIf launching url not supported in your platform. Just download link will be copied.\n\nCurrent Version: {current_version}\nLatest: {latest_version}",
+    "@update_available_desc": {
+        "placeholders": {
+            "current_version": {
+                "type": "String"
+            },
+            "latest_version": {
+                "type": "String"
+            }
+        }
+    },
     "text_new_line": "{text}\n",
     "@text_new_line": {
         "placeholders": {
@@ -85,5 +95,12 @@
     "close": "Close",
     "check_updates": "Check Updates",
     "up_to_date": "You are up to date",
-    "up_to_date_desc": "Congratulations! You are using the latest version of our application."
+    "up_to_date_desc": "Congratulations! You are using the latest version of our application.\n\nCurrent Version: {version}",
+    "@up_to_date_desc": {
+        "placeholders": {
+            "version": {
+                "type": "String"
+            }
+        }
+    }
 }
