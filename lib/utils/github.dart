@@ -30,13 +30,22 @@ class Github {
       ),
     );
     if (response.statusCode == 200) {
-      List<GithubReleaseModel> releases = (response.data as List)
-          .map((e) => GithubReleaseModel.fromJson(e))
-          .where((element) =>
-              !element.prerelease &&
-              element.targetCommitish == Secrets.githubReleaseBranch)
-          .toList();
-      return releases;
+      try {
+        List<GithubReleaseModel> releases = (response.data as List)
+            .map((e) => GithubReleaseModel.fromJson(e))
+            .where((element) =>
+                !element.prerelease &&
+                element.targetCommitish == Secrets.githubReleaseBranch)
+            .toList();
+        return releases;
+      } catch (e) {
+        if (kDebugMode) {
+          print("Could not check releases.");
+          print("Error:$e");
+          print("Response: ${response.data.toString()}");
+        }
+        return null;
+      }
     } else {
       return null;
     }
