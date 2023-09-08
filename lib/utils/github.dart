@@ -60,7 +60,7 @@ class Github {
               ? curr
               : next);
       if (currentRelease.name != latestRelease.name) {
-        myAlertDialog.show(
+        return myAlertDialog.show(
             title: appLocalizations.update_available,
             description: appLocalizations.update_available_desc,
             descriptionWidgetTopMargin: 10,
@@ -116,7 +116,11 @@ class Github {
                 child: Text(appLocalizations.close),
               ),
             ]);
+      } else {
+        return null;
       }
+    } else {
+      return null;
     }
   }
 }

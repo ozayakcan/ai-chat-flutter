@@ -82,5 +82,8 @@
     },
     "link_copied": "Link copied to clipboard",
     "go_release_page": "Go Release Page",
-    "close": "Close"
+    "close": "Close",
+    "check_updates": "Check Updates",
+    "up_to_date": "You are up to date",
+    "up_to_date_desc": "Congratulations! You are using the latest version of our application."
 }

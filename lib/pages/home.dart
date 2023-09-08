@@ -95,23 +95,41 @@ class _MyHomePageState extends State<MyHomePage> {
               MyAlertDialog myAlertDialog = MyAlertDialog.of(context);
               switch (value) {
                 case 0:
-                  await backupData(appLocalizations, scaffoldSnackbar);
+                  if (await Github.checkUpdates(context,
+                          version: widget.packageInfo.version) ==
+                      null) {
+                    myAlertDialog.show(
+                      title: appLocalizations.up_to_date,
+                      description: appLocalizations.up_to_date_desc,
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(appLocalizations.close),
+                        )
+                      ],
+                    );
+                  }
                   break;
                 case 1:
+                  await backupData(appLocalizations, scaffoldSnackbar);
+                  break;
+                case 2:
                   restoreData(
                     appLocalizations,
                     scaffoldSnackbar,
                     myAlertDialog,
                   );
                   break;
-                case 2:
+                case 3:
                   clearMessages(
                     appLocalizations,
                     scaffoldSnackbar,
                     myAlertDialog,
                   );
                   break;
-                case 3:
+                case 4:
                   clearAllData(
                     appLocalizations,
                     scaffoldSnackbar,
@@ -126,24 +144,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 popupMenuItem(
                   context,
                   value: 0,
+                  icon: Icons.cloud,
+                  text: appLocalizations.check_updates,
+                ),
+                popupMenuItem(
+                  context,
+                  value: 1,
                   icon: Icons.backup,
                   text: appLocalizations.backup_data,
                 ),
                 popupMenuItem(
                   context,
-                  value: 1,
+                  value: 2,
                   icon: Icons.restore,
                   text: appLocalizations.restore_data,
                 ),
                 popupMenuItem(
                   context,
-                  value: 2,
+                  value: 3,
                   icon: Icons.message,
                   text: appLocalizations.clear_messages,
                 ),
                 popupMenuItem(
                   context,
-                  value: 3,
+                  value: 4,
                   icon: Icons.clear_all,
                   text: appLocalizations.clear_all_data,
                 ),
