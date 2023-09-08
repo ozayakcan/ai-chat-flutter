@@ -2,8 +2,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:provider/provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:provider/provider.dart';
 
 import 'pages/splash.dart';
 import 'utils/theme.dart';
@@ -11,16 +11,15 @@ import 'utils/theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  String appName = packageInfo.appName;
   runApp(MyApp(
-    appName: appName,
+    packageInfo: packageInfo,
   ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, required this.appName});
+  const MyApp({super.key, required this.packageInfo});
 
-  final String appName;
+  final PackageInfo packageInfo;
 
   // This widget is the root of your application.
   @override
@@ -30,7 +29,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<ThemeModel>(
           builder: (context, ThemeModel themeNotifier, child) {
         return MaterialApp(
-          title: appName,
+          title: packageInfo.appName,
           theme: ThemeModel.light,
           darkTheme: ThemeModel.dark,
           themeMode: themeNotifier.isDark == null
@@ -53,7 +52,7 @@ class MyApp extends StatelessWidget {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           home: SplashPage(
-            appName: appName,
+            packageInfo: packageInfo,
           ),
         );
       }),

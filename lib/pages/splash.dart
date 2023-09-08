@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../models/message.dart';
 import '../utils/assets.dart';
@@ -9,10 +10,10 @@ import 'home.dart';
 class SplashPage extends StatefulWidget {
   const SplashPage({
     super.key,
-    required this.appName,
+    required this.packageInfo,
   });
 
-  final String appName;
+  final PackageInfo packageInfo;
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -35,10 +36,12 @@ class _SplashPageState extends State<SplashPage> {
       List<MessageModel> messages = await MessageModel.get();
       navigator.pushAndRemoveUntil(
         MaterialPageRoute(
-            builder: (context) => MyHomePage(
-                appName: widget.appName,
-                userID: realUserID,
-                messages: messages)),
+          builder: (context) => MyHomePage(
+            packageInfo: widget.packageInfo,
+            userID: realUserID,
+            messages: messages,
+          ),
+        ),
         (route) => false,
       );
     });

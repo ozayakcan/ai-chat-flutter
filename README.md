@@ -25,6 +25,18 @@ class Secrets {
   static String get brainShopBrainID => "your_brain_id";
   static String get brainShopApiKey => "your_brain_shop_api_key";
 
+
+  // For checking updates from github.
+  // Your release names should ends with your app version for this. Example release name: v0.3.8
+  static String get githubReleaseBranch => "master"; // Your release branch name.
+  
+  static String get githubToken => "your_github_token";
+  // Get token from here: https://github.com/settings/tokens?type=beta
+
+  static String get githubRepoPath => "github-username/github-project-name";
+  // Example: static String get githubRepoPath => "ozayakcan/ai-chat-flutter";
+
+
   // 16 bit, base64 string
   // You can use this site to generate keys: https://generate.plus/en/base64
   static String get encrpytionKey => "your_16_bit_base64_key";

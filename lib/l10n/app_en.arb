@@ -69,5 +69,18 @@
     "messages_sharing_unavailable": "Message sharing unavailable!",
     "delete_messages": "Delete Messages",
     "delete_messages_desc": "Are you sure you want to delete selected messages?",
-    "deleting_messages": "Deleting Messages"
+    "deleting_messages": "Deleting Messages",
+    "update_available": "Update Available!",
+    "update_available_desc": "There is new update available.\n\nYou can manually download new version by selecting from list.\n\nIf launching url not supported in your platform. Just download link will be copied.",
+    "text_new_line": "{text}\n",
+    "@text_new_line": {
+        "placeholders": {
+            "text": {
+                "type": "String"
+            }
+        }
+    },
+    "link_copied": "Link copied to clipboard",
+    "go_release_page": "Go Release Page",
+    "close": "Close"
 }

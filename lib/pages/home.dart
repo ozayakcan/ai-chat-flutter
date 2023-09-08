@@ -1,27 +1,30 @@
-import 'package:aichat/widgets/dialogs.dart';
-import 'package:aichat/widgets/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
+
 import '../models/message.dart';
 import '../utils/ai.dart';
 import '../utils/data.dart';
 import '../utils/date.dart';
+import '../utils/github.dart';
 import '../utils/shared_preferences.dart';
+import '../widgets/dialogs.dart';
 import '../widgets/message.dart';
+import '../widgets/widgets.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({
     super.key,
-    required this.appName,
+    required this.packageInfo,
     required this.userID,
     required this.messages,
   });
 
-  final String appName;
+  final PackageInfo packageInfo;
   final String userID;
   final List<MessageModel> messages;
 
@@ -49,6 +52,9 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     userID = widget.userID;
     messages = widget.messages;
+    Future.delayed(Duration.zero, () async {
+      await Github.checkUpdates(context, version: widget.packageInfo.version);
+    });
   }
 
   @override
@@ -57,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
     ScaffoldSnackbar scaffoldSnackbar = ScaffoldSnackbar.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.appName),
+        title: Text(widget.packageInfo.appName),
         actions: [
           if (messagesSelected)
             IconButton(
@@ -390,7 +396,8 @@ class _MyHomePageState extends State<MyHomePage> {
     if (selectedMessages != null) {
       await Share.share(
         selectedMessages,
-        subject: appLocalizations.messages_share_title(widget.appName),
+        subject:
+            appLocalizations.messages_share_title(widget.packageInfo.appName),
       );
     } else {
       scaffoldSnackbar.show(appLocalizations.no_message_selected);
@@ -448,7 +455,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appLocalizations.backing_up_data,
     );
     await Data.backupData(
-      appName: widget.appName,
+      appName: widget.packageInfo.appName,
       scaffoldSnackbar: scaffoldSnackbar,
       appLocalizations: appLocalizations,
     );

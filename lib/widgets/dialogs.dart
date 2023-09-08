@@ -12,6 +12,8 @@ class MyAlertDialog {
   void show({
     required String title,
     required String description,
+    Widget? descriptionWidget,
+    double descriptionWidgetTopMargin = 0,
     List<Widget>? actions,
     bool barrierDismissible = true,
   }) {
@@ -21,7 +23,18 @@ class MyAlertDialog {
       builder: (context) {
         return AlertDialog(
           title: Text(title),
-          content: Text(description),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(description),
+              SizedBox(
+                height: descriptionWidgetTopMargin,
+              ),
+              if (descriptionWidget != null) descriptionWidget,
+            ],
+          ),
           actions: actions,
         );
       },
